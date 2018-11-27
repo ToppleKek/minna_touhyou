@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Minna Tōhyō</title>
+</head>
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+    const socket = io();
+    let player = {id: 'not-connected'};
+    socket.on('connect', () => {
+        document.getElementById('connect-text').innerHTML = `Connected. Select playing type:`;
+    });
+</script>
+<script src="joinHandler.js"></script>
+<body>
+	<h1 id="connect-text">Connecting...</h1>
+    <button id="hostButton" onclick="sendPacketHost(socket)">Host</button>
+    <button id="playerButton" onclick="sendPacketPlayer(socket, player)">Play</button>
+</body>
+</html>

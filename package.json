@@ -1,0 +1,10 @@
+{
+  "name": "minna_touhyou",
+  "version": "0.0.1",
+  "description": "Everyone votes in this browser based Q&A game",
+  "dependencies": {
+    "express": "^4.16.4",
+    "socket.io": "^2.1.1",
+    "uuid": "^3.3.2"
+  }
+}

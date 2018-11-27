@@ -8,7 +8,11 @@
     const socket = io();
     let player = {id: 'not-connected'};
     socket.on('connect', () => {
-        document.getElementById('connect-text').innerHTML = `Connected. Select playing type:`;
+        socket.emit('auto-assign');
+        socket.on('auto-assign-complete', isPlayer => {
+            if (isPlayer) sendPacketPlayer(socket, player);
+            else document.getElementById('connect-text').innerHTML = `Connected. Select playing type:`;
+        });
     });
 </script>
 <script src="joinHandler.js"></script>

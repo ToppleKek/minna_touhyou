@@ -15,6 +15,18 @@ module.exports = {
             utils.logInfo('Client disconnect');
         });
 
+        socket.on('auto-assign', () => {
+            let foundHost = false;
+            for (let i = 0; i < mainModule.players.length; i++) {
+                if (mainModule.players[i].connectionType === 'host') {
+                    foundHost = true;
+                    socket.emit('auto-assign-complete', true);
+                    break;
+                }
+            }
+            if (!foundHost) socket.emit('auto-assign-complete', false);
+        });
+
         socket.on('join-ask', type => {
             let packet = {};
             if (type === 'host') {

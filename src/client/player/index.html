@@ -34,7 +34,7 @@
             <form>
                 <input type="text" id="nickname"><br>
             </form>
-            <button id="hostButton" onclick="sendPacketHost(socket)">Host</button>
+            <button id="hostButton" onclick="window.location.href = `${window.location.href}/host`;">Host</button>
             <button id="playerButton" onclick="sendPacketPlayer(socket, player)">Play</button>      
             <p id="user-list">No connected players</p>  
     </div>

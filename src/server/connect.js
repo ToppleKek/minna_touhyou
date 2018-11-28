@@ -27,9 +27,10 @@ module.exports = {
             if (!foundHost) socket.emit('auto-assign-complete', false);
         });
 
-        socket.on('join-ask', type => {
+        socket.on('join-ask', requestedPlayerObj => {
             let packet = {};
-            if (type === 'host') {
+            packet.nickname = requestedPlayerObj.nickname.length < 0 || requestedPlayerObj.nickname.length > 20 ? 'invalid-nickname' : requestedPlayerObj.nickname;
+            if (requestedPlayerObj.connectionType === 'host') {
                 packet.connectionType = 'host';
                 packet.id = 'host';
             } else {

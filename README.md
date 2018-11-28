@@ -6,7 +6,7 @@ Everyone votes in this browser-based Q&amp;A game
 
 ## What is it?
 Minna Tōhyō is a simple Kahoot! inspired, free, browser-based game built using [node.js](https://nodejs.org/en/), [socket.io](https://socket.io/) and 
-[express.js](https://expressjs.com/) where the players are asked open response questions to which they must come up with their best answer.
+[express.js](https://expressjs.com/) where the players are asked open response questions to which they must come up with their best answers.
 After all answers have been collected, the players must all vote on the best answer. The lowest scoring answers get eliminated and the process repeats until the top 3 
 answers are found. The top 3 questions get points. The host of the game can also select an answer they feel is the best and award them bonus points. 
 The player with the most points at the end of the game wins!

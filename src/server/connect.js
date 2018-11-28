@@ -10,6 +10,7 @@ module.exports = {
                 if (mainModule.players[i].id === socket.gameUUID) {
                     mainModule.players.splice(i, 1);
                     utils.logInfo(`Deleted player at index ${i} with UUID of: ${socket.gameUUID}`);
+                    mainModule.io.emit('players-update', mainModule.players);
                 }
             }
             utils.logInfo('Client disconnect');
@@ -42,6 +43,7 @@ module.exports = {
             utils.logInfo(`${packet.id === 'host' ? 'Host' : 'Player'} registered id: ${packet.id} with connectionType: ${packet.connectionType}\n\nPlayers now:\n`);
             console.dir(mainModule.players);
             socket.emit('join-confirm', packet);
+            mainModule.io.emit('players-update', mainModule.players);
         });
     },
 };

@@ -16,6 +16,14 @@
                 document.getElementById('connect-text').innerHTML = 'Connected. You have been selected as a player.';
             } else document.getElementById('connect-text').innerHTML = `Connected. Select playing type:`;
         });
+
+        socket.on('players-update', players => {
+            const humanList = [];
+            for (let i = 0; i < players.length; i++) humanList.push(`${players[i].nickname} - ${players[i].id}`);
+            document.getElementById('user-list').innerHTML = `Connected users:<br>${humanList.join('<br>')}`;
+        });
+
+
     });
 </script>
 <script src="joinHandler.js"></script>
@@ -27,7 +35,8 @@
                 <input type="text" id="nickname"><br>
             </form>
             <button id="hostButton" onclick="sendPacketHost(socket)">Host</button>
-            <button id="playerButton" onclick="sendPacketPlayer(socket, player)">Play</button>        
+            <button id="playerButton" onclick="sendPacketPlayer(socket, player)">Play</button>      
+            <p id="user-list">No connected players</p>  
     </div>
 </body>
 </html>

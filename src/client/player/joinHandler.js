@@ -13,7 +13,7 @@ function sendPacketPlayer(socket, player) {
         const eb = document.getElementById('name-text');
         e.parentNode.removeChild(e);
         eb.parentNode.removeChild(eb);
-        player = packet;
+        player.id = packet.id;
         document.getElementById('connect-text').innerHTML = `You're in the game! Awaiting game-start signal. Connected with id: ${player.id} and name: ${player.nickname}`;
     });
 }

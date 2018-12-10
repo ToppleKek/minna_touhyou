@@ -10,6 +10,7 @@
     function handleCountdown() {
         if (count === 0) {
             clearInterval(countdown);
+            document.getElementById('countdown-text').innerHTML = 'Waiting for a response from the server...';
         } else {
             document.getElementById('countdown-text').innerHTML = count;
             count -= 1;
@@ -38,12 +39,23 @@
         });
 
         socket.on('game-start-countdown', time => {
-            document.getElementById('countdown-text').style = "";
+            document.getElementById('countdown-text').style = '';
+            document.getElementById('connect-text').innerHTML = `Connected with id: ${player.id} and name: ${player.nickname}`;
             //count = time / 1000;
             countdown = window.setInterval(() => {
                 console.log(count);
                 handleCountdown();
             }, 1000);
+        });
+
+        socket.on('game-start', gameData => {
+            document.getElementById('countdown-text').style = 'display: none;';
+
+            const elem = document.createElement('p');
+            elem.setAttribute('id', 'info-text');
+            elem.innerHTML = `Now playing: ${gameData.name} by: ${gameData.author}`;
+
+            document.body.appendChild(elem);
         });
     });
 </script>

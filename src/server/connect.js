@@ -60,9 +60,9 @@ module.exports = {
             mainModule.playerIO.emit('game-start-countdown', 3000);
             setTimeout(() => {
                 mainModule.hostIO.emit('game-start', gameInfo);
-                mainModule.playerIO.emit('game-start', gameInfo.game.gameSetName);
+                mainModule.playerIO.emit('game-start', {name:gameInfo.game.gameSetName,author:gameInfo.game.author});
                 runtime.gameStart();
-            }, 3000);
+            }, 4500); // Wait a little longer just to make sure that all the clients have finished their countdown.
         });
     },
 };

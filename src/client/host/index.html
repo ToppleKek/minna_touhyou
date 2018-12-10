@@ -4,7 +4,31 @@
 	<title>Minna Tōhyō</title>
 </head>
 <script src="/socket.io/socket.io.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css">
 <script type="text/javascript">
+    const rules = ['The questions will appear on-screen and you must come up with your best answers.',
+    'Once everyone has answered the question, everyone will vote on the best answer.',
+    'The top 3 answers will get points. The person with the highest points at the end of the game wins!'];
+
+    function timeoutAsync(callback, time) {
+        return new Promise((resolve, reject) => {
+            window.setTimeout(() => {
+                callback();
+                resolve(true);
+            }, time);
+        });
+    }
+
+    async function showRules() {
+        for (let i = 0; i < rules.length; i++) {
+            await timeoutAsync(() => {
+                let elem = document.getElementById('connect-text');
+                let newElem = elem.cloneNode(true);
+                newElem.innerHTML = rules[i];
+                elem.parentNode.replaceChild(newElem, elem);
+            }, 7000);
+        }
+    }
     const socket = io('/host');
     let player = {id: 'not-connected'};
     socket.on('connect', () => {
@@ -24,14 +48,24 @@
         });
 
         socket.on('game-start', gameInfo => {
-            document.getElementById('connect-text').innerHTML = "Received game-start signal. Starting the game now...";
+            document.getElementById('connect-text').innerHTML = "Before we start, here's a rundown of the rules.";
+
+            const e = document.getElementById('gameJsonFilePicker');
+            const eb = document.getElementById('gameStartButton');
+
+            e.parentNode.removeChild(e);
+            eb.parentNode.removeChild(eb);
+
+            document.getElementById('connect-text').setAttribute('class', 'rules-text');
+
+            showRules();
         });
     });
 </script>
 <script src="joinHandler.js"></script>
 <body>
     <div id="user-controls">
-            <h1 id="connect-text">Connecting...</h1>
+            <h1 id="connect-text" class="connect-text">Connecting...</h1>
             <p id="name-text">Enter your nickname:</p><br>
             <form>
                 <input type="text" id="nickname"><br>

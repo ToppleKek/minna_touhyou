@@ -1,0 +1,20 @@
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+
+    45% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0%;
+    }
+}
+
+.rules-text {
+    position: absolute;
+    opacity: 0;
+    animation-name: fadeInOut;
+    animation-duration: 7s;
+}

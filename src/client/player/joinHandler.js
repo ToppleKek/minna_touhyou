@@ -14,6 +14,6 @@ function sendPacketPlayer(socket, player) {
         e.parentNode.removeChild(e);
         eb.parentNode.removeChild(eb);
         player = packet;
-        document.getElementById('connect-text').innerHTML = `You're in the game! Connected with id: ${player.id} and name: ${player.nickname}`;
+        document.getElementById('connect-text').innerHTML = `You're in the game! Awaiting game-start signal. Connected with id: ${player.id} and name: ${player.nickname}`;
     });
 }

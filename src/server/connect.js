@@ -1,4 +1,5 @@
 const mainModule = require('../../run.js');
+const runtime = require('./runtime.js');
 const utils = require('./utils.js');
 const uuidGen = require('uuid/v4');
 
@@ -47,6 +48,21 @@ module.exports = {
             socket.emit('join-confirm', packet);
             mainModule.playerIO.emit('players-update', mainModule.players);
             mainModule.hostIO.emit('players-update', mainModule.players);
+        });
+
+        socket.on('game-start-ask', gameInfo => {
+            const isHostSocket = socket.handshake.headers.referer.endsWith('/host/') && socket.gameUUID === 'host';
+            utils.logInfo(`Client asked to start the game! Is it the host? ${isHostSocket} UUID: ${socket.gameUUID} gameInfo:`);
+            console.dir(gameInfo);
+            //TODO: use Ajv to validate the json sent by the client
+            mainModule.currentGame = gameInfo.game;
+            mainModule.hostIO.emit('game-start-countdown', 3000);
+            mainModule.playerIO.emit('game-start-countdown', 3000);
+            setTimeout(() => {
+                mainModule.hostIO.emit('game-start', gameInfo);
+                mainModule.playerIO.emit('game-start', gameInfo.game.gameSetName);
+                runtime.gameStart();
+            }, 3000);
         });
     },
 };

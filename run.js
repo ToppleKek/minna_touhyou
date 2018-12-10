@@ -8,6 +8,7 @@ const utils = require('./src/server/utils.js');
 module.exports.hostIO = io.of('/host');
 module.exports.playerIO = io.of('');
 module.exports.players = [];
+module.exports.currentGame = {};
 
 app.use(express.static(`${__dirname}/src/client/player`));
 app.get('/', (request, result) => {

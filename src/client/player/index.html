@@ -4,9 +4,23 @@
 	<title>Minna Tōhyō</title>
 </head>
 <script src="/socket.io/socket.io.js"></script>
+<script src="joinHandler.js"></script>
+<script src="clientRuntime.js"></script>
 <script type="text/javascript">
+    function handleCountdown() {
+        if (count === 0) {
+            clearInterval(countdown);
+        } else {
+            document.getElementById('countdown-text').innerHTML = count;
+            count -= 1;
+        }
+    }
+
+    let count = 3;
+    let countdown;
     const socket = io();
     let player = {id: 'not-connected'};
+
     socket.on('connect', () => {
         socket.emit('auto-assign');
         socket.on('auto-assign-complete', isPlayer => {
@@ -23,18 +37,25 @@
             document.getElementById('user-list').innerHTML = `Connected users:<br>${humanList.join('<br>')}`;
         });
 
-
+        socket.on('game-start-countdown', time => {
+            document.getElementById('countdown-text').style = "";
+            //count = time / 1000;
+            countdown = window.setInterval(() => {
+                console.log(count);
+                handleCountdown();
+            }, 1000);
+        });
     });
 </script>
-<script src="joinHandler.js"></script>
 <body>
     <div id="user-controls">
             <h1 id="connect-text">Connecting...</h1>
+            <h1 id="countdown-text" style="display: none;">Game starting.</h1>
             <p id="name-text">Enter your nickname:</p><br>
             <form>
                 <input type="text" id="nickname"><br>
             </form>
-            <button id="hostButton" onclick="window.location.href = `${window.location.href}/host`;">Host</button>
+            <button id="hostButton" onclick="window.location.href = `${window.location.href}host/`;">Host</button>
             <button id="playerButton" onclick="sendPacketPlayer(socket, player)">Play</button>      
             <p id="user-list">No connected players</p>  
     </div>

@@ -11,7 +11,29 @@ function sendPacketHost(socket) {
         const eb = document.getElementById('name-text');
         e.parentNode.removeChild(e);
         eb.parentNode.removeChild(eb);
+        document.getElementById('gameJsonFilePicker').style = "";
+        document.getElementById('gameStartButton').style = "";
         player = packet;
         document.getElementById('connect-text').innerHTML = `You are hosting! Connected with id: ${player.id} and name: ${player.nickname}`;
+
     });
+}
+
+function sendPacketGameStart(socket) {
+    if (document.getElementById('gameJsonFilePicker').files.length > 0) {
+        const file = document.getElementById('gameJsonFilePicker').files[0];
+        if (file.type !== 'application/json') return alert(`The file you uploaded is not of type application/json! Instead it is ${file.type}`);
+        const reader = new FileReader();
+        reader.onload = event => {
+            let gameJson;
+            try {
+                gameJson = JSON.parse(event.target.result);
+                socket.emit('game-start-ask', {game:gameJson});
+                document.getElementById('connect-text').innerHTML = "Asking server to start! Emitting signals...";
+            } catch (e) {
+                alert(`The file you sent failed to parse. ${e}`);
+            }
+        }
+        reader.readAsText(file);
+    }
 }

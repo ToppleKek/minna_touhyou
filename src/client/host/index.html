@@ -23,7 +23,9 @@
             document.getElementById('user-list').innerHTML = `Connected users:<br>${humanList.join('<br>')}`;
         });
 
-
+        socket.on('game-start', gameInfo => {
+            document.getElementById('connect-text').innerHTML = "Received game-start signal. Starting the game now...";
+        });
     });
 </script>
 <script src="joinHandler.js"></script>
@@ -33,9 +35,11 @@
             <p id="name-text">Enter your nickname:</p><br>
             <form>
                 <input type="text" id="nickname"><br>
+                <input type="file" id="gameJsonFilePicker" style="display: none;"><br>
             </form>
             <button id="hostButton" onclick="sendPacketHost(socket)">Host</button> 
-            <p id="user-list">No connected players</p>  
+            <p id="user-list">No connected players</p>
+            <button id="gameStartButton" onclick="sendPacketGameStart(socket)" style="display: none;">Start Game</button> 
     </div>
 </body>
 </html>

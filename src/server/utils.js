@@ -5,5 +5,5 @@ module.exports = {
 
     logInfo(info) {
         return console.log(`\x1b[1m\x1b[36m[${process.uptime()}] INFO: ${info}\x1b[0m`);
-    }  
+    }
 };

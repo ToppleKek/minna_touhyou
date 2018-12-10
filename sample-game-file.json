@@ -1,0 +1,15 @@
+{
+    "MTFileVer": 1,
+    "author": "TopKek",
+    "gameSetName": "Sample",
+    "gameSetTopic": "Sample topic",
+    "gameSetQuestions": [{
+        "question": "What is your favourite colour or smth",
+        "timeLimit": 60,
+        "houseAnswer": "Red is the best if you have another opinion its wrong"
+    }, {
+        "question": "How was your day?",
+        "timeLimit": 75,
+        "houseAnswer": "Just fine."
+    }]
+}

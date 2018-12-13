@@ -4,11 +4,13 @@
 	<title>Minna Tōhyō</title>
 </head>
 <script src="/socket.io/socket.io.js"></script>
+<script src="clientRuntime.js"></script>
 <link rel="stylesheet" type="text/css" href="style.css">
 <script type="text/javascript">
     const rules = ['The questions will appear on-screen and you must come up with your best answers.',
     'Once everyone has answered the question, everyone will vote on the best answer.',
-    'The top 3 answers will get points. The person with the highest points at the end of the game wins!'];
+    'The top 3 answers will get points. The person with the highest points at the end of the game wins!',
+    'Ready? Here comes the first question.'];
 
     function timeoutAsync(callback, time) {
         return new Promise((resolve, reject) => {
@@ -28,6 +30,7 @@
                 elem.parentNode.replaceChild(newElem, elem);
             }, 7000);
         }
+        socket.emit('round-start-ask');
     }
     const socket = io('/host');
     let player = {id: 'not-connected'};
@@ -60,6 +63,8 @@
 
             showRules();
         });
+
+        socket.on('round-start', handleRound);
     });
 </script>
 <script src="joinHandler.js"></script>

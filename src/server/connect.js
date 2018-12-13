@@ -61,7 +61,7 @@ module.exports = {
             setTimeout(() => {
                 mainModule.hostIO.emit('game-start', gameInfo);
                 mainModule.playerIO.emit('game-start', {name:gameInfo.game.gameSetName,author:gameInfo.game.author});
-                runtime.gameStart();
+                runtime.gameStart(socket);
             }, 4500); // Wait a little longer just to make sure that all the clients have finished their countdown.
         });
     },

@@ -57,6 +57,8 @@
 
             document.body.appendChild(elem);
         });
+
+        socket.on('round-start', handleRound);
     });
 </script>
 <body>

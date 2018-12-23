@@ -5,7 +5,7 @@ module.exports = {
     gameStart(socket) {
         utils.logInfo('The game should start now');
         // This should setup the server to start sending questions to the host.
-        this.mainGame(socket);
+        socket.on('round-start-ask', () => module.exports.mainGame(socket));
     },
 
     async mainGame(socket) {
@@ -18,9 +18,21 @@ module.exports = {
         }
     },
 
-    manageRound(socket, question) {
+    manageRound(socket, questionObj) {
         return new Promise((resolve, reject) => {
-            
+            mainModule.hostIO.emit('round-start', questionObj);
+            mainModule.playerIO.emit('round-start', {
+                question:questionObj.question,
+                timeLimit:questionObj.timeLimit
+            });
+
+            socket.on('calc-score', results => {
+
+            });
+
+            socket.on('round-end-ask', () => {
+
+            });
         });
     }
 };

@@ -8,7 +8,8 @@ function timeoutAsync(callback, time) {
 }
 
 async function handleRound(roundInfo) {
-	for (let i = 3; i >= 0; i--) {
+    let i = roundInfo.firstRound ? 7 : 5;
+	for (; i >= 0; i--) {
 		await timeoutAsync(() => {
 			document.getElementById('countdown-text').innerHTML = `Ready? ${i}`;
 		}, 1000);

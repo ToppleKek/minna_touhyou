@@ -42,8 +42,9 @@ module.exports = {
                 packet.id = uuidGen();
             }         
             socket.gameUUID = packet.id;
+            packet.socketID = socket.id;
             mainModule.players.push(packet);
-            utils.logInfo(`${packet.id === 'host' ? 'Host' : 'Player'} registered id: ${packet.id} with connectionType: ${packet.connectionType}\n\nPlayers now:\n`);
+            utils.logInfo(`${packet.id === 'host' ? 'Host' : 'Player'} registered game UUID: ${packet.id} socketID: ${packet.socketID} with connectionType: ${packet.connectionType}\n\nPlayers now:\n`);
             console.dir(mainModule.players);
             socket.emit('join-confirm', packet);
             mainModule.playerIO.emit('players-update', mainModule.players);
@@ -55,14 +56,18 @@ module.exports = {
             utils.logInfo(`Client asked to start the game! Is it the host? ${isHostSocket} UUID: ${socket.gameUUID} gameInfo:`);
             console.dir(gameInfo);
             //TODO: use Ajv to validate the json sent by the client
-            mainModule.currentGame = gameInfo.game;
-            mainModule.hostIO.emit('game-start-countdown', 3000);
-            mainModule.playerIO.emit('game-start-countdown', 3000);
-            setTimeout(() => {
-                mainModule.hostIO.emit('game-start', gameInfo);
-                mainModule.playerIO.emit('game-start', {name:gameInfo.game.gameSetName,author:gameInfo.game.author});
-                runtime.gameStart(socket);
-            }, 4500); // Wait a little longer just to make sure that all the clients have finished their countdown.
+            if (isHostSocket) {
+                mainModule.currentGame = gameInfo.game;
+                mainModule.hostIO.emit('game-start-countdown', 3000);
+                mainModule.playerIO.emit('game-start-countdown', 3000);
+                setTimeout(() => {
+                    mainModule.hostIO.emit('game-start', gameInfo);
+                    mainModule.playerIO.emit('game-start', {name:gameInfo.game.gameSetName,author:gameInfo.game.author});
+                    runtime.gameStart(socket);
+                }, 4500); // Wait a little longer just to make sure that all the clients have finished their countdown.
+            } else {
+                utils.logWarn(`A client that is not the host attempted to start the game! Client: ${socket.gameUUID} ID: ${socket.id}`);
+            }
         });
     },
 };

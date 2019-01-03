@@ -30,7 +30,13 @@
                 elem.parentNode.replaceChild(newElem, elem);
             }, 7000);
         }
+
         socket.emit('round-start-ask');
+
+        await timeoutAsync(() => {
+            document.getElementById('connect-text').innerHTML = '';
+            document.getElementById('connect-text').setAttribute('class', 'question-text');
+        }, 7000);
     }
     const socket = io('/host');
     let player = {id: 'not-connected'};
@@ -71,6 +77,7 @@
 <body>
     <div id="user-controls">
             <h1 id="connect-text" class="connect-text">Connecting...</h1>
+            <h1 id="countdown-text" style="display: none;">Countdown</h1>
             <p id="name-text">Enter your nickname:</p><br>
             <form>
                 <input type="text" id="nickname"><br>

@@ -10,21 +10,31 @@ module.exports = {
 
     async mainGame(socket) {
         for (let i = 0; i < mainModule.currentGame.gameSetQuestions.length; i++) {
-            mainModule.hostIO.emit('round-start', mainModule.currentGame.gameSetQuestions[0]);
-            mainModule.playerIO.emit('round-start', {
-                question:mainModule.currentGame.gameSetQuestions[0].question,
-                timeLimit:mainModule.currentGame.gameSetQuestions[0].timeLimit
-            });
+            await this.manageRound(socket, mainModule.currentGame.gameSetQuestions[i], i === 0);
         }
     },
 
-    manageRound(socket, questionObj) {
+    manageRound(socket, questionObj, firstRound) {
         return new Promise((resolve, reject) => {
-            mainModule.hostIO.emit('round-start', questionObj);
-            mainModule.playerIO.emit('round-start', {
-                question:questionObj.question,
-                timeLimit:questionObj.timeLimit
-            });
+            if (firstRound) {
+                setTimeout(() => {
+                    questionObj.firstRound = firstRound;
+                    mainModule.hostIO.emit('round-start', questionObj);
+                    mainModule.playerIO.emit('round-start', {
+                        question:questionObj.question,
+                        timeLimit:questionObj.timeLimit,
+                        firstRound: questionObj.firstRound,
+                    });
+                }, 7000); // We should probably wait when its the first round because of the rules
+                          // The rules take a little while to fade out, so we wait before starting the game
+            } else {
+                mainModule.hostIO.emit('round-start', questionObj);
+                mainModule.playerIO.emit('round-start', {
+                    question:questionObj.question,
+                    timeLimit:questionObj.timeLimit,
+                    firstRound
+                });
+            }
 
             socket.on('calc-score', results => {
 

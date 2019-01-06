@@ -59,6 +59,7 @@
         });
 
         socket.on('round-start', handleRound);
+        socket.on('answer-confirm', removeUIElements);
     });
 </script>
 <body>

@@ -69,5 +69,7 @@ module.exports = {
                 utils.logWarn(`A client that is not the host attempted to start the game! Client: ${socket.gameUUID} ID: ${socket.id}`);
             }
         });
+
+        socket.on('answer-submit', answer => runtime.manageAnswerSubmit(socket, answer));
     },
 };

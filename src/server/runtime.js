@@ -44,5 +44,24 @@ module.exports = {
 
             });
         });
+    },
+
+    manageAnswerSubmit(socket, answer) {
+        const player = mainModule.players.find(e => {
+            return e.id === answer.player.id && e.socketID === socket.id;
+        });
+
+        const i = mainModule.players.findIndex(e => {
+            return e.id === answer.player.id && e.socketID === socket.id;
+        });
+
+        // store the players current answer in the player object, this will get reset at the beginning of every round
+        if (i >= 0) mainModule.players[i].currentRoundAnswer = answer.text;
+
+        utils.logInfo(`Player: ${player.nickname} - ${player.id} submitted: ${answer.text}`);
+
+        // inform the host that someone has submitted an answer and that it should display it on screen
+        mainModule.hostIO.emit('answer-submit', {answer, players: mainModule.players});
+        socket.emit('answer-confirm');
     }
 };

@@ -7,19 +7,15 @@
 <script src="clientRuntime.js"></script>
 <link rel="stylesheet" type="text/css" href="style.css">
 <script type="text/javascript">
-    const rules = ['The questions will appear on-screen and you must come up with your best answers.',
-    'Once everyone has answered the question, everyone will vote on the best answer.',
-    'The top 3 answers will get points. The person with the highest points at the end of the game wins!',
-    'Ready? Here comes the first question.'];
+    // For the sake of time and debugging, the rules will be uncommented near the end of development
 
-    function timeoutAsync(callback, time) {
-        return new Promise((resolve, reject) => {
-            window.setTimeout(() => {
-                callback();
-                resolve(true);
-            }, time);
-        });
-    }
+    // const rules = ['The questions will appear on-screen and you must come up with your best answers.',
+    // 'Once everyone has answered the question, everyone will vote on the best answer.',
+    // 'The top 3 answers will get points. The person with the highest points at the end of the game wins!',
+    // 'Ready? Here comes the first question.'];
+
+    const rules = ['rules go here'];
+    let currentTimerCancel = false;
 
     async function showRules() {
         for (let i = 0; i < rules.length; i++) {
@@ -71,6 +67,7 @@
         });
 
         socket.on('round-start', handleRound);
+        socket.on('answer-submit', handleAnswer);
     });
 </script>
 <script src="joinHandler.js"></script>
@@ -78,6 +75,7 @@
     <div id="user-controls">
             <h1 id="connect-text" class="connect-text">Connecting...</h1>
             <h1 id="countdown-text" style="display: none;">Countdown</h1>
+            <p id="submitted-answers" style="display: none;"></p>
             <p id="name-text">Enter your nickname:</p><br>
             <form>
                 <input type="text" id="nickname"><br>

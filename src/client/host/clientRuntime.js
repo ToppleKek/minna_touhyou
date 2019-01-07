@@ -1,6 +1,5 @@
 function timeoutAsync(callback, time) {
     return new Promise((resolve, reject) => {
-        console.log(currentTimerCancel);
         window.setTimeout(() => {
             if (currentTimerCancel) resolve(false);
             else {
@@ -36,10 +35,11 @@ async function handleRound(roundInfo) {
             countdownText.innerHTML = `Write your best answers! ${i}`;
         }, 1000);
 
-        if (!cont) break;
+        if (!cont) {
+            currentTimerCancel = false;
+            break;
+        }
     }
-
-    console.log('finished round (times up)');
 
     connectText.innerHTML = 'Time is up!';
     countdownText.style = 'display: none;';
@@ -47,20 +47,28 @@ async function handleRound(roundInfo) {
     socket.emit('vote-start-ask');
 }
 
+function handleVotingStage(players) {
+    console.log('vote start');
+    const answerList = document.getElementById('submitted-answers');  
+}
+
 function handleAnswer(packet) {
     const answerList = document.getElementById('submitted-answers');
-    const humanAnswers = [];
+    if (answerList.innerHTML === 'No answers yet.') answerList.innerHTML = ''; // Sometimes you just have to take shortcuts
+    let n = 0;
+
+    const p = document.createElement('p');
+    const text = document.createTextNode(`${packet.answer.text} - Anon`);
+
+    p.appendChild(text);
+    answerList.appendChild(p);
 
     for (let i = 0; i < packet.players.length; i++) {
         if (packet.players[i].id === 'host' || !packet.players[i].currentRoundAnswer) continue;
-        humanAnswers.push(`${packet.players[i].currentRoundAnswer} - Anon`);
+        else n++;
     }
 
-    answerList.innerHTML = humanAnswers.join('<br><br>');
-
-    if (humanAnswers.length >= packet.players.length - 1) {
+    if (n >= packet.players.length - 1) {
         currentTimerCancel = true;
-        console.log('finished round (all submitted)');
-        socket.emit('vote-start-ask');
     }
 }

@@ -36,6 +36,25 @@ module.exports = {
                 });
             }
 
+            socket.on('vote-start-ask', () => { 
+                if (socket.handshake.headers.referer.endsWith('/host/') && socket.gameUUID === 'host') {
+                    const playerSafeAnswers = [];
+                    for (let i = 0; i < mainModule.players.length; i++) {
+                        if (mainModule.players[i].id === 'host' || !mainModule.players[i].currentRoundAnswer) continue;
+                        // I think it's safe to trust them with the other player's UUID's; They should have never gotten a list of who's who.
+                        // Unless they decided to memorize the UUID then figure out how the game works then figure out how to extract the ID...
+                        playerSafeAnswers.push({id:mainModule.players[i].id,answer:mainModule.players[i].currentRoundAnswer});
+                    }
+                    setTimeout(() => {
+                        utils.logInfo('Start voting...');
+                        mainModule.hostIO.emit('vote-start', mainModule.players);
+                        mainModule.playerIO.emit('vote-start', playerSafeAnswers);
+                    }, 2000); // Wait a little to let everyone see that time is up
+                } else {
+                    utils.logWarn(`A client that is not the host attempted to start the voting stage! Client: ${socket.gameUUID} ID: ${socket.id}`);
+                }
+            });
+
             socket.on('calc-score', results => {
 
             });
@@ -63,5 +82,10 @@ module.exports = {
         // inform the host that someone has submitted an answer and that it should display it on screen
         mainModule.hostIO.emit('answer-submit', {answer, players: mainModule.players});
         socket.emit('answer-confirm');
+    },
+
+    manageVoteSubmit(socket, vote) {
+        utils.logInfo(`User: ${socket.gameUUID} voted for: ${vote}`);
+        if (socket.gameUUID === vote) utils.logWarn(`This user just tried to vote for their own answer!`);
     }
 };

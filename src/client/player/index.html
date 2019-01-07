@@ -16,7 +16,7 @@
             count -= 1;
         }
     }
-
+    let currentTimerCancel = false;
     let count = 3;
     let countdown;
     const socket = io();
@@ -60,6 +60,7 @@
 
         socket.on('round-start', handleRound);
         socket.on('answer-confirm', removeUIElements);
+        socket.on('vote-start', answers => handleVotingStage(answers, socket));
     });
 </script>
 <body>

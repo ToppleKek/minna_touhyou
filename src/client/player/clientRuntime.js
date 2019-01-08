@@ -48,10 +48,9 @@ async function handleRound(roundInfo) {
         if (!cont) break;
     }
 
-    document.getElementById('connect-text').innerHTML = 'Times up!';
-    document.getElementById('countdown-text').style = 'display: none;';
-
     removeUIElements();
+
+    document.getElementById('countdown-text').style = 'display: none;';
 }
 
 function submitAnswer() {
@@ -83,7 +82,8 @@ function handleVotingStage(answers, socket) {
 }
 
 function submitVote(e, socket) {
-    console.dir(e);
+    document.getElementById('submitted-answers').innerHTML = '';
+    document.getElementById('connect-text').innerHTML = 'Waiting for everyone to vote...';
     socket.emit('vote-submit', e.id.substring(9));
 }
 

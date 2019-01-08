@@ -69,6 +69,7 @@
         socket.on('round-start', handleRound);
         socket.on('answer-submit', handleAnswer);
         socket.on('vote-start', handleVotingStage);
+        socket.on('vote-submit', packet => handleSubmitVote(packet.vote, packet.players));
     });
 </script>
 <script src="joinHandler.js"></script>

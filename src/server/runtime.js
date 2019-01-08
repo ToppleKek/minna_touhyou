@@ -41,6 +41,8 @@ module.exports = {
                     const playerSafeAnswers = [];
                     for (let i = 0; i < mainModule.players.length; i++) {
                         if (mainModule.players[i].id === 'host' || !mainModule.players[i].currentRoundAnswer) continue;
+                        mainModule.players[i].votes = 0;
+                        mainModule.players[i].voted = false;
                         // I think it's safe to trust them with the other player's UUID's; They should have never gotten a list of who's who.
                         // Unless they decided to memorize the UUID then figure out how the game works then figure out how to extract the ID...
                         playerSafeAnswers.push({id:mainModule.players[i].id,answer:mainModule.players[i].currentRoundAnswer});
@@ -85,7 +87,68 @@ module.exports = {
     },
 
     manageVoteSubmit(socket, vote) {
+        const n = mainModule.players.findIndex(e => {
+            return e.id === socket.gameUUID;
+        });
+
+        if (mainModule.players[n].voted) return utils.logWarn(`User: ${socket.gameUUID} - ${socket.id} tried to vote a second time!`);
+        else mainModule.players[n].voted = true;
         utils.logInfo(`User: ${socket.gameUUID} voted for: ${vote}`);
         if (socket.gameUUID === vote) utils.logWarn(`This user just tried to vote for their own answer!`);
+        else {
+            const i = mainModule.players.findIndex(e => {
+                return e.id === vote;
+            });
+
+            mainModule.players[i].votes++;
+            mainModule.hostIO.emit('vote-submit', {vote,players:mainModule.players});
+        }
+
+        let endVote = true;
+
+        for (let i = 0; i < mainModule.players.length; i++) {
+            utils.logInfo(`Voted? ${mainModule.players[i].voted}`);
+            if (!mainModule.players[i].voted && mainModule.players[i].id !== 'host') {
+                endVote = false;
+                break;
+            }
+        }
+
+        if (endVote) {
+            utils.logInfo(`Finished voting round. Calling manageVoteTotals() to determine if another round is reqired...`);
+            this.manageVoteTotals();
+        }
+    },
+
+    manageVoteTotals() {
+        for (let i = 0; i < mainModule.players.length; i++) {
+            // Remove all people with no votes
+            if (mainModule.players[i].votes === 0) {
+                mainModule.players[i].currentRoundAnswer = null;
+            }
+        }
+
+        const newPlayers = utils.sortPlayers(mainModule.players, 'votes');
+        console.dir(newPlayers);
+        const voteNums = [];
+
+        for (let i = 0; i < newPlayers.length; i++) voteNums.push(newPlayers[i].votes);
+
+        // Find the lowest vote number
+        const lowestVote = Math.min(...voteNums);
+        let lowestAns = 0;
+        // Find how many answers have the lowest vote number
+        for (let i = 0; i < newPlayers.length; i++) {
+            if (newPlayers[i].votes <= lowestVote) lowestAns++;
+        }
+        // Determine if we need another vote. If there are more than 5 answers left, have a revote because theres enough competition
+        if (newPlayers.length - lowestAns > 3) {
+            // Revote
+            utils.logInfo('We must have a revote!');
+        } else {
+            utils.logInfo('We shall end the vote!');
+        }
+        mainModule.hostIO.emit('vote-end', mainModule.players);
+        mainModule.playerIO.emit('vote-end');
     }
 };

@@ -49,7 +49,33 @@ async function handleRound(roundInfo) {
 
 function handleVotingStage(players) {
     console.log('vote start');
-    const answerList = document.getElementById('submitted-answers');  
+    const answerList = document.getElementById('submitted-answers');
+    answerList.innerHTML = '';
+
+    for (let i = 0; i < players.length; i++) {
+        if (players[i].id === 'host' || !players[i].currentRoundAnswer) continue;
+
+        const p = document.createElement('p');
+        p.setAttribute('id', `submitted-${players[i].id}`);
+        p.innerHTML = `${players[i].currentRoundAnswer} - 0`;
+
+        answerList.appendChild(p);         
+    }
+}
+
+function handleSubmitVote(vote, players) {
+    const answerList = document.getElementById('submitted-answers');
+    const children = answerList.getElementsByTagName('*');
+
+    for (let i = 0; i < children.length; i++) {
+        if (children[i].id.substring(10) === vote) {
+            const n = players.findIndex(e => {
+                return e.id === vote;
+            });
+
+            children[i].innerHTML = `${players[n].currentRoundAnswer} - ${players[n].votes}`;
+        }
+    }
 }
 
 function handleAnswer(packet) {

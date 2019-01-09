@@ -98,3 +98,11 @@ function handleAnswer(packet) {
         currentTimerCancel = true;
     }
 }
+
+function handleRevote(players) {
+    document.getElementById('connect-text').innerHTML = 'Not enough info to determine the winners. We must have a revote.';
+
+    setTimeout(() => {
+        handleVotingStage(players);
+    }, 2000);
+}

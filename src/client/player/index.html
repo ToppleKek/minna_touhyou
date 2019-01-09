@@ -61,6 +61,7 @@
         socket.on('round-start', handleRound);
         socket.on('answer-confirm', removeUIElements);
         socket.on('vote-start', answers => handleVotingStage(answers, socket));
+        socket.on('revote', handleRevote);
     });
 </script>
 <body>

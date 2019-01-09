@@ -57,7 +57,7 @@ function submitAnswer() {
     socket.emit('answer-submit', {player,text:document.getElementById('answer-input').value});
 }
 
-function handleVotingStage(answers, socket) {
+function handleVotingStage(answers) {
     currentTimerCancel = true;
     console.log('vote start');
     document.getElementById('connect-text').innerHTML = 'Now vote for the best answer.';
@@ -96,4 +96,12 @@ function removeUIElements() {
     if (submit) submit.parentNode.removeChild(submit);
 
     document.getElementById('connect-text').innerHTML = 'Good answer! Waiting for other players to finish...';
+}
+
+function handleRevote(answers) {
+    document.getElementById('connect-text').innerHTML = 'Not enough info to determine the winners. We must have a revote.';
+
+    setTimeout(() => {
+        handleVotingStage(answers);
+    }, 2000);
 }

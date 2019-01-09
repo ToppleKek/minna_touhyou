@@ -139,16 +139,45 @@ module.exports = {
         let lowestAns = 0;
         // Find how many answers have the lowest vote number
         for (let i = 0; i < newPlayers.length; i++) {
-            if (newPlayers[i].votes <= lowestVote) lowestAns++;
+            if (newPlayers[i].votes <= lowestVote && newPlayers[i].id !== 'host') lowestAns++;
         }
         // Determine if we need another vote. If there are more than 5 answers left, have a revote because theres enough competition
-        if (newPlayers.length - lowestAns > 3) {
+        if (newPlayers.length - lowestAns > 5) {
             // Revote
             utils.logInfo('We must have a revote!');
+            const playerSafeAnswers = [];
+
+            for (let i = 0; i < newPlayers.length; i++) {
+                // Reset all players and remove required players
+                if (newPlayers[i].votes <= lowestVote && newPlayers[i].id !== 'host') newPlayers[i].currentRoundAnswer = null;
+                mainModule.players[i].votes = 0;
+                mainModule.players[i].voted = false;
+
+                if (mainModule.players[i].id === 'host' || !mainModule.players[i].currentRoundAnswer) continue;
+
+                playerSafeAnswers.push({id:mainModule.players[i].id,answer:mainModule.players[i].currentRoundAnswer});
+            }
+
+            mainModule.players = newPlayers;
+            mainModule.hostIO.emit('revote', mainModule.players);
+            mainModule.playerIO.emit('revote', playerSafeAnswers);
         } else {
             utils.logInfo('We shall end the vote!');
+            const sortedPlayers = utils.sortPlayers(mainModule.players, 'votes');
+            let points = 1000;
+
+            for (let i = 0; i < 5; i++) {
+                sortedPlayers[i].points = points;
+                points -= 150;
+            }
+
+            mainModule.players = sortedPlayers;
+            mainModule.hostIO.emit('vote-end', mainModule.players);
+            mainModule.playerIO.emit('vote-end');
         }
-        mainModule.hostIO.emit('vote-end', mainModule.players);
-        mainModule.playerIO.emit('vote-end');
+    },
+
+    resetRound() {
+
     }
 };

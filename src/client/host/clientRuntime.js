@@ -106,3 +106,30 @@ function handleRevote(players) {
         handleVotingStage(players);
     }, 2000);
 }
+
+function showResults(packet) {
+    document.getElementById('connect-text').innerHTML = 'Congratulations Winners';
+
+    const submittedAnswers = document.getElementById('submitted-answers');
+    const humanLB = [];
+
+    for (let i = 0; i < packet.length; i++) {
+        if (packet[i].id === 'host') continue;
+        humanLB.push(`${packet[i].nickname} -- ${packet[i].points}`);
+    }
+
+    submittedAnswers.innerHTML = humanLB.join('<br>');
+
+    const nextButton = document.createElement('button');
+    nextButton.setAttribute('id', 'next-button');
+    nextButton.innerHTML = 'Next Round';
+    nextButton.addEventListener('click', endRound);
+
+    const parent = submittedAnswers.parentNode;
+
+    parent.insertBefore(nextButton, submittedAnswers.nextSibling);
+}
+
+function endRound() {
+
+}

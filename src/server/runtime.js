@@ -164,16 +164,31 @@ module.exports = {
         } else {
             utils.logInfo('We shall end the vote!');
             const sortedPlayers = utils.sortPlayers(mainModule.players, 'votes');
+            console.dir(sortedPlayers);
+            const playerSafeLeaderboard = [];
+            const lonelyGame = sortedPlayers.length < 5 ? sortedPlayers.length : 5; // :(
             let points = 1000;
 
-            for (let i = 0; i < 5; i++) {
-                sortedPlayers[i].points = points;
+            for (let i = 0; i < lonelyGame; i++) {
+                if (sortedPlayers[i].id === 'host' || !sortedPlayers[i].currentRoundAnswer) continue;
+                sortedPlayers[i].points += points;
                 points -= 150;
+            }
+
+            for (let i = 0; i < sortedPlayers.length; i++) {
+                if (sortedPlayers[i].id === 'host') continue;
+                // Reset all players for the next round
+                sortedPlayers[i].currentRoundAnswer = null;
+                sortedPlayers[i].votes = 0;
+                sortedPlayers[i].voted = false;
+
+                // I didn't really WANT to send IDs here but I guess we gotta...
+                playerSafeLeaderboard.push({name:sortedPlayers[i].nickname,points:sortedPlayers[i].points,id:sortedPlayers[i].id});
             }
 
             mainModule.players = sortedPlayers;
             mainModule.hostIO.emit('vote-end', mainModule.players);
-            mainModule.playerIO.emit('vote-end');
+            mainModule.playerIO.emit('vote-end', {leaderboard:playerSafeLeaderboard, winners:playerSafeLeaderboard.slice(0, 4)});
         }
     },
 

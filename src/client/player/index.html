@@ -62,6 +62,7 @@
         socket.on('answer-confirm', removeUIElements);
         socket.on('vote-start', answers => handleVotingStage(answers, socket));
         socket.on('revote', handleRevote);
+        socket.on('vote-end', showResults);
     });
 </script>
 <body>

@@ -105,3 +105,23 @@ function handleRevote(answers) {
         handleVotingStage(answers);
     }, 2000);
 }
+
+function showResults(packet) {
+    console.log(player.id);
+    console.dir(packet);
+    const won = packet.leaderboard.find(e => {
+        return e.id === player.id;
+    });
+
+    console.log(`DEBUG: ${won}`);
+    document.getElementById('connect-text').innerHTML = won ? 'Nice job! Your answer was voted into the top 5.' : 'Nice try, but your answer was not a winner.';
+
+    const submittedAnswers = document.getElementById('submitted-answers');
+    const humanLB = [];
+
+    for (let i = 0; i < packet.leaderboard.length; i++) {
+        humanLB.push(`${packet.leaderboard[i].name} -- ${packet.leaderboard[i].points}`);
+    }
+
+    submittedAnswers.innerHTML = humanLB.join('<br>');
+}

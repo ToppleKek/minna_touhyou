@@ -43,6 +43,7 @@ module.exports = {
             }         
             socket.gameUUID = packet.id;
             packet.socketID = socket.id;
+            packet.points = 0;
             mainModule.players.push(packet);
             utils.logInfo(`${packet.id === 'host' ? 'Host' : 'Player'} registered game UUID: ${packet.id} socketID: ${packet.socketID} with connectionType: ${packet.connectionType}\n\nPlayers now:\n`);
             console.dir(mainModule.players);

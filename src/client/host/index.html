@@ -71,6 +71,7 @@
         socket.on('vote-start', handleVotingStage);
         socket.on('vote-submit', packet => handleSubmitVote(packet.vote, packet.players));
         socket.on('revote', handleRevote);
+        socket.on('vote-end', showResults);
     });
 </script>
 <script src="joinHandler.js"></script>

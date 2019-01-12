@@ -123,13 +123,29 @@ function showResults(packet) {
     const nextButton = document.createElement('button');
     nextButton.setAttribute('id', 'next-button');
     nextButton.innerHTML = 'Next Round';
-    nextButton.addEventListener('click', endRound);
+    nextButton.addEventListener('click', sendEndRoundPacket);
 
     const parent = submittedAnswers.parentNode;
 
     parent.insertBefore(nextButton, submittedAnswers.nextSibling);
 }
 
-function endRound() {
+function sendEndRoundPacket() {
+    document.getElementById('connect-text').innerHTML = 'Emitting round-end-ask; Waiting for a response from the server...';
 
+    socket.emit('round-end-ask');
+}
+
+function endRound() {
+    // Reset all UI elements for the next round
+    currentTimerCancel = false;
+    document.getElementById('connect-text').innerHTML = 'Waiting for a response from the server...';
+
+    const nextButton = document.getElementById('next-button');
+    const submittedAnswers = document.getElementById('submitted-answers');
+
+    submittedAnswers.innerHTML = '';
+    submittedAnswers.style = 'display: none;';
+
+    nextButton.parentNode.removeChild(nextButton);
 }

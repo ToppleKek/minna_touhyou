@@ -63,6 +63,7 @@
         socket.on('vote-start', answers => handleVotingStage(answers, socket));
         socket.on('revote', handleRevote);
         socket.on('vote-end', showResults);
+        socket.on('round-end', endRound);
     });
 </script>
 <body>

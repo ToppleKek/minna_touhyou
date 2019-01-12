@@ -57,12 +57,20 @@ module.exports = {
                 }
             });
 
-            socket.on('calc-score', results => {
-
-            });
-
             socket.on('round-end-ask', () => {
+                for (let i = 0; i < mainModule.players.length; i++) {
+                    mainModule.players[i].votes = 0;
+                    mainModule.players[i].voted = false;
+                    mainModule.players[i].currentRoundAnswer = null;
+                }
 
+                mainModule.hostIO.emit('round-end');
+                mainModule.playerIO.emit('round-end');
+
+                // Wait a little for the clients to reset their playfields
+                setTimeout(() => {
+                    resolve(true);
+                }, 2000);
             });
         });
     },

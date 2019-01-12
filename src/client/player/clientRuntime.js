@@ -12,6 +12,7 @@ function timeoutAsync(callback, time) {
 
 
 async function handleRound(roundInfo) {
+    document.getElementById('countdown-text').style = '';
     for (let i = roundInfo.firstRound ? 7 : 5; i >= 0; i--) {
         await timeoutAsync(() => {
             document.getElementById('countdown-text').innerHTML = `Ready? ${i}`;
@@ -45,7 +46,10 @@ async function handleRound(roundInfo) {
             document.getElementById('countdown-text').innerHTML = `Write your answer! ${i}`;
         }, 1000);
 
-        if (!cont) break;
+        if (!cont) {
+            currentTimerCancel = false;
+            break;
+        }
     }
 
     removeUIElements();
@@ -124,4 +128,15 @@ function showResults(packet) {
     }
 
     submittedAnswers.innerHTML = humanLB.join('<br>');
+}
+
+function endRound() {
+    // Reset all UI elements for the next round
+    currentTimerCancel = false;
+    document.getElementById('connect-text').innerHTML = 'Waiting for a response from the server...';
+
+    const submittedAnswers = document.getElementById('submitted-answers');
+
+    submittedAnswers.innerHTML = '';
+    submittedAnswers.parentNode.removeChild(submittedAnswers);
 }

@@ -73,5 +73,8 @@ module.exports = {
 
         socket.on('answer-submit', answer => runtime.manageAnswerSubmit(socket, answer));
         socket.on('vote-submit', vote => runtime.manageVoteSubmit(socket, vote));
+
+        socket.on('vote-start-ask', () => runtime.voteStartAsk(socket));
+        socket.on('round-end-ask', () => runtime.roundEndAsk(socket));
     },
 };

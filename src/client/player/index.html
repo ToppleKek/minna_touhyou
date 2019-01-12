@@ -64,6 +64,7 @@
         socket.on('revote', handleRevote);
         socket.on('vote-end', showResults);
         socket.on('round-end', endRound);
+        socket.on('game-end', endGame);
     });
 </script>
 <body>

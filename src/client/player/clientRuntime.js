@@ -58,7 +58,15 @@ async function handleRound(roundInfo) {
 }
 
 function submitAnswer() {
-    socket.emit('answer-submit', {player,text:document.getElementById('answer-input').value});
+    const ans = document.getElementById('answer-input');
+
+    if (ans.value.length < 1 || ans.value.length > 500) {
+        return alert('Your answer must be between 1 and 500 characters!');
+    }
+
+    document.getElementById('connect-text').innerHTML = 'Good answer! Waiting for other players to finish...';
+    
+    socket.emit('answer-submit', {player,text:ans.value});
 }
 
 function handleVotingStage(answers) {
@@ -98,8 +106,6 @@ function removeUIElements() {
 
     if (textBox) textBox.parentNode.removeChild(textBox);
     if (submit) submit.parentNode.removeChild(submit);
-
-    document.getElementById('connect-text').innerHTML = 'Good answer! Waiting for other players to finish...';
 }
 
 function handleRevote(answers) {
@@ -139,4 +145,20 @@ function endRound() {
 
     submittedAnswers.innerHTML = '';
     submittedAnswers.parentNode.removeChild(submittedAnswers);
+}
+
+function endGame(players) {
+    const submittedAnswers = document.createElement('p');
+    const userList = document.getElementById('user-list');
+    const humanLB = [];
+
+    for (let i = 0; i < players.length; i++) {
+        humanLB.push(`[${i + 1}] - ${players[i].nickname} - ${players[i].points}`);
+    }
+
+    document.getElementById('connect-text').innerHTML = 'Game Over!';
+    submittedAnswers.innerHTML = humanLB.join('<br>');
+
+    const parent = userList.parentNode;
+    parent.insertBefore(submittedAnswers, userList);
 }

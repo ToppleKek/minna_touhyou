@@ -44,6 +44,8 @@ async function handleRound(roundInfo) {
     connectText.innerHTML = 'Time is up!';
     countdownText.style = 'display: none;';
 
+    console.log('emitting vote-start-ask');
+
     socket.emit('vote-start-ask');
 }
 
@@ -148,4 +150,17 @@ function endRound() {
     submittedAnswers.style = 'display: none;';
 
     nextButton.parentNode.removeChild(nextButton);
+}
+
+function endGame(players) {
+    const submittedAnswers = document.getElementById('submitted-answers');
+    const humanLB = [];
+
+    for (let i = 0; i < players.length; i++) {
+        humanLB.push(`[${i + 1}] - ${players[i].nickname} - ${players[i].points}`);
+    }
+
+    document.getElementById('connect-text').innerHTML = 'Game Over!';
+    submittedAnswers.style = '';
+    submittedAnswers.innerHTML = humanLB.join('<br>');
 }

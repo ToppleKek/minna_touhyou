@@ -34,5 +34,14 @@ module.exports = {
     	players.reverse();
 
     	return players;
+    },
+
+    timeoutAsync(callback, time) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                callback();
+                resolve(true);
+            }, time);
+        });
     }
 };

@@ -12,7 +12,7 @@ module.exports = {
 
     async mainGame(socket) {
         for (let i = 0; i < mainModule.currentGame.gameSetQuestions.length; i++) {
-            await this.manageRound(socket, mainModule.currentGame.gameSetQuestions[i], i === 0);
+            await this.manageRound(socket, mainModule.currentGame.gameSetQuestions[i], i === 0, i, mainModule.currentGame.gameSetQuestions.length);
         }
         // Who cares now, the game is over
         const newPlayers = utils.sortPlayers(mainModule.players, 'points');
@@ -21,11 +21,13 @@ module.exports = {
         utils.logInfo('Game Over, ^C to exit...');
     },
 
-    manageRound(socket, questionObj, firstRound) {
+    manageRound(socket, questionObj, firstRound, i, gameLen) {
         return new Promise(async (resolve, reject) => {
             if (firstRound) {
                 setTimeout(() => {
                     questionObj.firstRound = firstRound;
+                    questionObj.roundNumber = i + 1;
+                    questionObj.gameLen = gameLen;
                     mainModule.hostIO.emit('round-start', questionObj);
                     mainModule.playerIO.emit('round-start', {
                         question:questionObj.question,
@@ -35,6 +37,8 @@ module.exports = {
                 }, 7000); // We should probably wait when its the first round because of the rules
                           // The rules take a little while to fade out, so we wait before starting the game
             } else {
+                questionObj.roundNumber = i + 1;
+                questionObj.gameLen = gameLen;
                 mainModule.hostIO.emit('round-start', questionObj);
                 mainModule.playerIO.emit('round-start', {
                     question:questionObj.question,
@@ -209,6 +213,12 @@ module.exports = {
             mainModule.hostIO.emit('vote-end', mainModule.players);
             mainModule.playerIO.emit('vote-end', {leaderboard:playerSafeLeaderboard, winners:playerSafeLeaderboard.slice(0, 4)});
         }
+    },
+
+    handleVoteEndAsk(socket) {
+        utils.logInfo(`Client asked to end voting round! ${socket.gameUUID}`);
+        const isHostSocket = socket.handshake.headers.referer.endsWith('/host/') && socket.gameUUID === 'host';
+        if (isHostSocket) this.manageVoteTotals(socket);
     },
 
     pollRoundOver() {

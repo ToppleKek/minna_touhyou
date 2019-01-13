@@ -1,16 +1,3 @@
-@keyframes fadeInOut {
-    0% {
-        opacity: 0;
-    }
-
-    45% {
-        opacity: 1;
-    }
-
-    100% {
-    }
-}
-
 body {
     background-color: #1d2124;
     color: #ffffff;
@@ -36,7 +23,7 @@ button:hover {
 
 input[type=text] {
   background-color: #c7c9cc;
-  color: white;
+  color: black;
   border: 2px solid #1e52b2;
 }
 
@@ -46,14 +33,6 @@ footer {
     padding: 5px;
     background-color: #343A40;
     color: #ffffff;
-}
-
-.rules-text {
-    position: absolute;
-    opacity: 0;
-    text-align: center;
-    animation-name: fadeInOut;
-    animation-duration: 7s;
 }
 
 .user-controls {
@@ -67,10 +46,10 @@ footer {
     font-size: 16px;
 }
 
-.user-list-waiting {
-    font-size: 24px;
+.answer-input {
+  font-size: 14px;
 }
 
-.submitted-answers {
-    font-size: 24px;
+.info-text {
+  padding-bottom: 20px;
 }

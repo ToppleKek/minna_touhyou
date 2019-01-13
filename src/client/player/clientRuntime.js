@@ -23,10 +23,14 @@ async function handleRound(roundInfo) {
     document.getElementById('connect-text').innerHTML = roundInfo.question;
 
     const br = document.createElement('br');
+    br.setAttribute('id', 'debug-br');
 
-    const e = document.createElement('input');
-    e.setAttribute('type', 'text');
+    const e = document.createElement('textarea');
+    e.setAttribute('rows', '3');
+    e.setAttribute('cols', '30');
     e.setAttribute('id', 'answer-input');
+    e.setAttribute('class', 'answer-input');
+    e.setAttribute('placeholder', 'Write your answer and click submit when you\'re done');
 
     const submit = document.createElement('button');
     submit.setAttribute('id', 'submit-answer');
@@ -70,8 +74,11 @@ function submitAnswer() {
 }
 
 function handleVotingStage(answers) {
+    const submit = document.getElementById('submitted-answers');
+    if (submit) submit.parentNode.removeChild(submit);
     currentTimerCancel = true;
     console.log('vote start');
+    console.dir(answers);
     document.getElementById('connect-text').innerHTML = 'Now vote for the best answer.';
     const submittedAnswers = document.createElement('div');
     submittedAnswers.setAttribute('id', 'submitted-answers');
@@ -88,13 +95,20 @@ function handleVotingStage(answers) {
         button.innerHTML = answers[i].answer;
         button.addEventListener('click', () => submitVote(button, socket));
 
+        // IM RUNNING OUT OF TIME AAAAAAAAAa
+        const br = document.createElement('br');
+        const br2 = document.createElement('br');
+
         submittedAnswers.appendChild(button);
+        submittedAnswers.appendChild(br);
+        submittedAnswers.appendChild(br2);
     }
 
 }
 
 function submitVote(e, socket) {
-    document.getElementById('submitted-answers').innerHTML = '';
+    const submit = document.getElementById('submitted-answers');
+    if (submit) submit.parentNode.removeChild(submit);
     document.getElementById('connect-text').innerHTML = 'Waiting for everyone to vote...';
     socket.emit('vote-submit', e.id.substring(9));
 }
@@ -119,7 +133,7 @@ function handleRevote(answers) {
 function showResults(packet) {
     console.log(player.id);
     console.dir(packet);
-    const won = packet.leaderboard.find(e => {
+    const won = packet.winners.find(e => {
         return e.id === player.id;
     });
 
@@ -134,6 +148,11 @@ function showResults(packet) {
     }
 
     submittedAnswers.innerHTML = humanLB.join('<br>');
+
+    const i = packet.leaderboard.find(e => {
+        return e.id === player.id;
+    });
+    document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: running - Points: ${packet.leaderboard[i].points}`;
 }
 
 function endRound() {

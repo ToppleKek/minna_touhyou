@@ -11,9 +11,12 @@ function sendPacketPlayer(socket, player) {
     socket.on('join-confirm', packet => {
         const e = document.getElementById('nickname');
         const eb = document.getElementById('name-text');
+
         e.parentNode.removeChild(e);
         eb.parentNode.removeChild(eb);
         player.id = packet.id;
-        document.getElementById('connect-text').innerHTML = `You're in the game! Awaiting game-start signal. Connected with id: ${player.id} and name: ${player.nickname}`;
+
+        document.getElementById('connect-text').innerHTML = `Connected as a player. Your name is: ${player.nickname}`;
+        document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: waiting for players`;
     });
 }

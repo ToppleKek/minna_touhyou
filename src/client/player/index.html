@@ -1,83 +1,127 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Minna Tōhyō</title>
-</head>
-<script src="/socket.io/socket.io.js"></script>
-<script src="joinHandler.js"></script>
-<script src="clientRuntime.js"></script>
-<script type="text/javascript">
-    function handleCountdown() {
-        if (count === 0) {
-            clearInterval(countdown);
-            document.getElementById('countdown-text').innerHTML = 'Waiting for a response from the server...';
-        } else {
-            document.getElementById('countdown-text').innerHTML = count;
-            count -= 1;
+    <head>
+    	<title>Everyone votes in this browser based Q&A game | みんな投票</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="joinHandler.js"></script>
+    <script src="clientRuntime.js"></script>
+    <script type="text/javascript">
+        function showDebug() {
+            document.getElementById('debugger').innerHTML = `---みんな投票 (Minna Tōhyō) DEBUGGER---<br><br>---COMMON DEBUG VARIABLES---<br>player: ${player}<br>currentTimerCancel: ${currentTimerCancel}<br>\
+                socket: ${socket}<br><br> If you would like more information, you may access many variables in the console.<br>\
+                The main socket.io WebSocket may be accessed by the socket variable.<br>WARNING:<br>\
+                SENDING INVALID SIGNALS/SENDING SIGNALS WHEN NOT EXPECTED MAY PRODUCE UNEXPECTED RESULTS!<br>\
+                Keep note of what role you play! No one likes cheaters. You are a player. This will close in 15 seconds.`;
+
+            window.setTimeout(() => {
+                document.getElementById('debugger').innerHTML = '';
+            }, 15000);
         }
-    }
-    let currentTimerCancel = false;
-    let count = 3;
-    let countdown;
-    const socket = io();
-    let player = {id: 'not-connected'};
 
-    socket.on('connect', () => {
-        socket.emit('auto-assign');
-        socket.on('auto-assign-complete', isPlayer => {
-            if (isPlayer) {
-                const e = document.getElementById('hostButton');
-                e.parentNode.removeChild(e);
-                document.getElementById('connect-text').innerHTML = 'Connected. You have been selected as a player.';
-            } else document.getElementById('connect-text').innerHTML = `Connected. Select playing type:`;
+        function handleCountdown() {
+            if (count === 0) {
+                clearInterval(countdown);
+                document.getElementById('countdown-text').innerHTML = 'Waiting for a response from the server...';
+            } else {
+                document.getElementById('countdown-text').innerHTML = count;
+                count -= 1;
+            }
+        }
+        let currentTimerCancel = false;
+        let count = 3;
+        let countdown;
+        const socket = io();
+        let player = {id: 'not-connected'};
+
+        socket.on('connect', () => {
+            socket.emit('auto-assign');
+            socket.on('auto-assign-complete', isPlayer => {
+                if (isPlayer) {
+                    const e = document.getElementById('hostButton');
+                    e.parentNode.removeChild(e);
+                    document.getElementById('connect-text').innerHTML = 'Connected. You have been selected as a player.';
+                } else document.getElementById('connect-text').innerHTML = `Connected. Select playing type:`;
+            });
+
+            socket.on('players-update', players => {
+                const humanList = [];
+                for (let i = 0; i < players.length; i++) humanList.push(`${players[i].nickname} - ${players[i].id}`);
+                document.getElementById('user-list').innerHTML = `Connected users:<br>${humanList.join('<br>')}`;
+            });
+
+            socket.on('game-start-countdown', time => {
+                document.getElementById('countdown-text').style = '';
+                document.getElementById('button-br').style = 'display: none;';
+                document.getElementById('connect-text').innerHTML = `Connected as a player. Your name is: ${player.nickname}`;
+                //count = time / 1000;
+                countdown = window.setInterval(() => {
+                    console.log(count);
+                    handleCountdown();
+                }, 1000);
+            });
+
+            socket.on('game-start', gameData => {
+                document.getElementById('countdown-text').innerHTML = 'Look at the host screen!';
+
+                const elem = document.createElement('p');
+                elem.setAttribute('id', 'info-text');
+                elem.setAttribute('class', 'info-text');
+                elem.innerHTML = `Now playing: ${gameData.name} by: ${gameData.author}`;
+
+                document.body.appendChild(elem);
+
+                document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: starting`;
+            });
+
+            socket.on('round-start', handleRound);
+            socket.on('answer-confirm', removeUIElements);
+            socket.on('vote-start', answers => handleVotingStage(answers, socket));
+            socket.on('revote', handleRevote);
+            socket.on('vote-end', showResults);
+            socket.on('round-end', endRound);
+            socket.on('game-end', endGame);
         });
-
-        socket.on('players-update', players => {
-            const humanList = [];
-            for (let i = 0; i < players.length; i++) humanList.push(`${players[i].nickname} - ${players[i].id}`);
-            document.getElementById('user-list').innerHTML = `Connected users:<br>${humanList.join('<br>')}`;
-        });
-
-        socket.on('game-start-countdown', time => {
-            document.getElementById('countdown-text').style = '';
-            document.getElementById('connect-text').innerHTML = `Connected with id: ${player.id} and name: ${player.nickname}`;
-            //count = time / 1000;
-            countdown = window.setInterval(() => {
-                console.log(count);
-                handleCountdown();
-            }, 1000);
-        });
-
-        socket.on('game-start', gameData => {
-            document.getElementById('countdown-text').innerHTML = 'Look at the host screen!';
-
-            const elem = document.createElement('p');
-            elem.setAttribute('id', 'info-text');
-            elem.innerHTML = `Now playing: ${gameData.name} by: ${gameData.author}`;
-
-            document.body.appendChild(elem);
-        });
-
-        socket.on('round-start', handleRound);
-        socket.on('answer-confirm', removeUIElements);
-        socket.on('vote-start', answers => handleVotingStage(answers, socket));
-        socket.on('revote', handleRevote);
-        socket.on('vote-end', showResults);
-        socket.on('round-end', endRound);
-        socket.on('game-end', endGame);
-    });
-</script>
-<body>
-    <div id="user-controls">
+    </script>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">みんな投票 <small><i>(Minna Tōhyō)</i></small></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-item nav-link active" href="javascript:void(0)" onclick="showDebug()">Show Debug Information</a>
+                    <a class="nav-item nav-link" href="https://github.com/ToppleKek/minna_touhyou">Source Code</a>
+                </div>
+            </div>
+        </nav>
+        <div id="user-controls" class="user-controls">
             <h1 id="connect-text">Connecting...</h1>
             <h1 id="countdown-text" style="display: none;">Game starting.</h1>
             <p id="name-text">Enter your nickname:</p><br>
             <form>
                 <input type="text" id="nickname"><br>
             </form>
+            <br>
             <button id="hostButton" onclick="window.location.href = `${window.location.href}host/`;">Host</button>
-            <button id="playerButton" onclick="sendPacketPlayer(socket, player)">Play</button>      
+            <button id="playerButton" onclick="sendPacketPlayer(socket, player)">Play</button>
+            <br id="button-br">
             <p id="user-list">No connected players</p>  
-    </div>
-</body>
+        </div>
+        <p id="debugger" style="font-size: 16px"></p>
+        <footer class="page-footer font-small blue fixed-bottom">
+            <div id="footer-div">
+                Not connected - Not connected - Game status: waiting for players
+            </div>
+        </footer>
+        <!-- Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    </body>
 </html>

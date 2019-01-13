@@ -20,12 +20,12 @@ async function handleRound(roundInfo) {
 
     for (let i = roundInfo.firstRound ? 7 : 5; i >= 0; i--) {
         await timeoutAsync(() => {
-            document.getElementById('countdown-text').innerHTML = `Ready? ${i}`;
+            document.getElementById('countdown-text').innerHTML = `Question ${roundInfo.roundNumber} of ${roundInfo.gameLen}. Ready? ${i}`;
         }, 1000);
     }
 
 
-    connectText.innerHTML = roundInfo.question;
+    connectText.innerHTML = `${roundInfo.question}<br><br><small>Extra Info: ${roundInfo.extraInfo}</small>`;
     answerList.innerHTML = 'No answers yet.';
     answerList.style = '';
     countdownText.style = '';
@@ -63,6 +63,16 @@ function handleVotingStage(players) {
 
         answerList.appendChild(p);         
     }
+
+    const button = document.createElement('button');
+
+    button.innerHTML = 'End Voting Stage';
+    button.setAttribute('id', 'end-round-button');
+    button.addEventListener('click', () => {
+        socket.emit('vote-end-ask');
+    });
+
+    answerList.appendChild(button);
 }
 
 function handleSubmitVote(vote, players) {

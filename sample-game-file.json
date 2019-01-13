@@ -1,15 +1,17 @@
 {
-    "MTFileVer": 1,
+    "MTFileVer": 2,
     "author": "TopKek",
     "gameSetName": "Sample",
     "gameSetTopic": "Sample topic",
     "gameSetQuestions": [{
         "question": "What is your favourite colour or smth",
         "timeLimit": 60,
-        "houseAnswer": "Red is the best if you have another opinion its wrong"
+        "houseAnswer": "Red is the best if you have another opinion its wrong",
+        "extraInfo": "noun: colour. The property possessed by an object of producing different sensations on the eye as a result of the way the object reflects or emits light."
     }, {
         "question": "How was your day?",
         "timeLimit": 75,
-        "houseAnswer": "Just fine."
+        "houseAnswer": "Just fine.",
+        "extraInfo": "Nothing here"
     }]
 }

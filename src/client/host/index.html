@@ -29,6 +29,10 @@
             }, 15000);
         }
 
+        function toggleUserList() {
+            
+        }
+
         async function showRules() {
             for (let i = 0; i < rules.length; i++) {
                 await timeoutAsync(() => {
@@ -117,6 +121,7 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <a class="nav-item nav-link active" href="javascript:void(0)" onclick="showDebug()">Show Debug Information</a>
+                    <a class="nav-item nav-link active" href="javascript:void(0)" onclick="toggleUserList()">Toggle User List</a>
                     <a class="nav-item nav-link" href="https://github.com/ToppleKek/minna_touhyou">Source Code</a>
                 </div>
             </div>
@@ -142,7 +147,7 @@
         <p id="debugger" style="font-size: 16px"></p>
         <footer class="page-footer font-small blue fixed-bottom">
             <div id="footer-div">
-                Not connected - Not connected - Game status: waiting for players - Points: 0
+                Not connected - Not connected - Game status: waiting for players
             </div>
         </footer>
         <!-- Bootstrap JS -->

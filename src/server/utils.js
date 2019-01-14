@@ -11,6 +11,10 @@ module.exports = {
         return console.log(`\x1b[1m\x1b[91m[${process.uptime()}] WARN: ${warn}\x1b[0m`);
     },
 
+    logDebug(deb) {
+        return console.log(`\x1b[1m\x1b[92m[${process.uptime()}] DEBUG: ${deb}\x1b[0m`);
+    },
+
     sortPlayers(players, sType) {
     	// The argument 'players' must be a players array with player objects defined by:
     	// { 

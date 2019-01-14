@@ -25,7 +25,7 @@ async function handleRound(roundInfo) {
     }
 
 
-    connectText.innerHTML = `${roundInfo.question}<br><br><small>Extra Info: ${roundInfo.extraInfo}</small>`;
+    connectText.innerHTML = `${roundInfo.question}<br><small>Extra Info: ${roundInfo.extraInfo}</small>`;
     answerList.innerHTML = 'No answers yet.';
     answerList.style = '';
     countdownText.style = '';
@@ -96,7 +96,7 @@ function handleAnswer(packet) {
     let n = 0;
 
     const p = document.createElement('p');
-    const text = document.createTextNode(`${packet.answer.text} - Anon`);
+    const text = document.createTextNode(`"${packet.answer.text}" - Anon`);
 
     p.appendChild(text);
     answerList.appendChild(p);

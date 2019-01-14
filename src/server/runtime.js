@@ -53,7 +53,7 @@ module.exports = {
     },
 
     voteStartAsk(socket) {
-        utils.logWarn('vote-start-ask');
+        utils.logDebug('vote-start-ask');
         if (socket.handshake.headers.referer.endsWith('/host/') && socket.gameUUID === 'host') {
             const playerSafeAnswers = [];
             for (let i = 0; i < mainModule.players.length; i++) {
@@ -186,7 +186,7 @@ module.exports = {
             mainModule.playerIO.emit('revote', playerSafeAnswers);
         } else {
             utils.logInfo('We shall end the vote!');
-            const sortedPlayers = utils.sortPlayers(mainModule.players, 'votes');
+            let sortedPlayers = utils.sortPlayers(mainModule.players, 'votes');
             console.dir(sortedPlayers);
             const playerSafeLeaderboard = [];
             const lonelyGame = sortedPlayers.length < 5 ? sortedPlayers.length : 5; // :(
@@ -195,9 +195,12 @@ module.exports = {
             for (let i = 0; i < lonelyGame; i++) {
                 if (sortedPlayers[i].id === 'host' || !sortedPlayers[i].currentRoundAnswer) continue;
                 sortedPlayers[i].points += points;
+                utils.logInfo(`Awarded ${sortedPlayers[i].nickname} - ${points} points`);
                 points -= 150;
             }
 
+            sortedPlayers = utils.sortPlayers(sortedPlayers, 'points');
+            
             for (let i = 0; i < sortedPlayers.length; i++) {
                 if (sortedPlayers[i].id === 'host') continue;
                 // Reset all players for the next round
@@ -226,11 +229,12 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             for (;;) {
                 if (module.exports.roundEnd) {
+                    utils.logInfo('Polling roundEnd resulted in true, exiting the round');
                     module.exports.roundEnd = false;
                     break;
                 }
                 await utils.timeoutAsync(() => {
-                    utils.logWarn('Polling roundEnd resulted in false');
+                    utils.logDebug('Polling roundEnd resulted in false');
                 }, 1000);
             }
 

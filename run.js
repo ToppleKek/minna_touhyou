@@ -1,3 +1,4 @@
+const os = require('os');
 const express = require('express');
 const app = express();
 const http = require('http').Server(app);
@@ -32,4 +33,6 @@ module.exports.playerIO.on('connection', connectionHandler.connect);
 http.listen(3000, () => {
     utils.logError('this is a sample error');
     utils.logInfo('Now listening on port 3000');
+    utils.logDebug('Here are your network interfaces. Use the current network interface\'s IPv4 address to give to other players:');
+    console.dir(os.networkInterfaces());
 });

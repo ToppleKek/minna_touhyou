@@ -13,6 +13,7 @@ function timeoutAsync(callback, time) {
 
 async function handleRound(roundInfo) {
     document.getElementById('countdown-text').style = '';
+    document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: running - Points: ${player.points}`;
     for (let i = roundInfo.firstRound ? 7 : 5; i >= 0; i--) {
         await timeoutAsync(() => {
             document.getElementById('countdown-text').innerHTML = `Ready? ${i}`;
@@ -65,17 +66,28 @@ function submitAnswer() {
     const ans = document.getElementById('answer-input');
 
     if (ans.value.length < 1 || ans.value.length > 500) {
-        return alert('Your answer must be between 1 and 500 characters!');
-    }
+        const exist = document.getElementById('warn-text');
+        if (exist) return;
+        const p = document.createElement('p');
+        p.setAttribute('id', 'warn-text');
+        p.innerHTML = 'Your answer must be between 1 and 500 characters!';
 
-    document.getElementById('connect-text').innerHTML = 'Good answer! Waiting for other players to finish...';
-    
-    socket.emit('answer-submit', {player,text:ans.value});
+        const e = document.getElementById('countdown-text');
+        const parent = e.parentNode;
+
+        parent.insertBefore(p, e.nextSibling);
+
+        window.setTimeout(() => {
+            p.parentNode.removeChild(p);
+        }, 5000);
+    } else {
+        document.getElementById('connect-text').innerHTML = 'Good answer! Waiting for other players to finish...';
+        
+        socket.emit('answer-submit', {player,text:ans.value});
+    }
 }
 
 function handleVotingStage(answers) {
-    const submit = document.getElementById('submitted-answers');
-    if (submit) submit.parentNode.removeChild(submit);
     currentTimerCancel = true;
     console.log('vote start');
     console.dir(answers);
@@ -108,7 +120,7 @@ function handleVotingStage(answers) {
 
 function submitVote(e, socket) {
     const submit = document.getElementById('submitted-answers');
-    if (submit) submit.parentNode.removeChild(submit);
+    if (submit) submit.innerHTML = '';
     document.getElementById('connect-text').innerHTML = 'Waiting for everyone to vote...';
     socket.emit('vote-submit', e.id.substring(9));
 }
@@ -123,11 +135,13 @@ function removeUIElements() {
 }
 
 function handleRevote(answers) {
+    const submit = document.getElementById('submitted-answers');
+    if (submit) submit.parentNode.removeChild(submit);
     document.getElementById('connect-text').innerHTML = 'Not enough info to determine the winners. We must have a revote.';
 
     setTimeout(() => {
         handleVotingStage(answers);
-    }, 2000);
+    }, 4000);
 }
 
 function showResults(packet) {
@@ -149,10 +163,17 @@ function showResults(packet) {
 
     submittedAnswers.innerHTML = humanLB.join('<br>');
 
-    const i = packet.leaderboard.find(e => {
+    const i = packet.leaderboard.findIndex(e => {
         return e.id === player.id;
     });
-    document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: running - Points: ${packet.leaderboard[i].points}`;
+    console.log(i);
+    console.dir(packet.leaderboard);
+    console.log('packet:');
+    console.dir(packet);
+
+    player.points = packet.leaderboard[i].points;
+    console.log(packet.leaderboard[i].points);
+    document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: running - Points: ${player.points}`;
 }
 
 function endRound() {

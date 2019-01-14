@@ -116,7 +116,7 @@ function handleRevote(players) {
 
     setTimeout(() => {
         handleVotingStage(players);
-    }, 2000);
+    }, 4000);
 }
 
 function showResults(packet) {

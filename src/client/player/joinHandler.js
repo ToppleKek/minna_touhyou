@@ -15,6 +15,7 @@ function sendPacketPlayer(socket, player) {
         e.parentNode.removeChild(e);
         eb.parentNode.removeChild(eb);
         player.id = packet.id;
+        player.points = packet.points;
 
         document.getElementById('connect-text').innerHTML = `Connected as a player. Your name is: ${player.nickname}`;
         document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: waiting for players`;

@@ -11,6 +11,12 @@
     <script src="joinHandler.js"></script>
     <script src="clientRuntime.js"></script>
     <script type="text/javascript">
+        let userListShown = true;
+
+        window.onbeforeunload = () => {
+            return true;
+        };
+
         function showDebug() {
             document.getElementById('debugger').innerHTML = `---みんな投票 (Minna Tōhyō) DEBUGGER---<br><br>---COMMON DEBUG VARIABLES---<br>player: ${player}<br>currentTimerCancel: ${currentTimerCancel}<br>\
                 socket: ${socket}<br><br> If you would like more information, you may access many variables in the console.<br>\
@@ -32,6 +38,13 @@
                 count -= 1;
             }
         }
+
+        function toggleUserList() {
+            const uList = document.getElementById('user-list');
+            uList.style = userListShown ? 'display: none;' : '';
+            userListShown = !userListShown;
+        }
+
         let currentTimerCancel = false;
         let count = 3;
         let countdown;
@@ -75,7 +88,7 @@
 
                 document.body.appendChild(elem);
 
-                document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: starting`;
+                document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: starting - Points: ${player.points}`;
             });
 
             socket.on('round-start', handleRound);
@@ -96,6 +109,7 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <a class="nav-item nav-link active" href="javascript:void(0)" onclick="showDebug()">Show Debug Information</a>
+                    <a class="nav-item nav-link active" href="javascript:void(0)" onclick="toggleUserList()">Toggle User List</a>
                     <a class="nav-item nav-link" href="https://github.com/ToppleKek/minna_touhyou">Source Code</a>
                 </div>
             </div>
@@ -116,7 +130,7 @@
         <p id="debugger" style="font-size: 16px"></p>
         <footer class="page-footer font-small blue fixed-bottom">
             <div id="footer-div">
-                Not connected - Not connected - Game status: waiting for players
+                Not connected - Not connected - Game status: waiting for players - Points: N/A
             </div>
         </footer>
         <!-- Bootstrap JS -->

@@ -130,7 +130,7 @@ module.exports = {
         let endVote = true;
 
         for (let i = 0; i < mainModule.players.length; i++) {
-            utils.logInfo(`Voted? ${mainModule.players[i].voted}`);
+            utils.logInfo(`Voted? ${mainModule.players[i].nickname}: ${mainModule.players[i].voted}`);
             if (!mainModule.players[i].voted && mainModule.players[i].id !== 'host') {
                 endVote = false;
                 break;

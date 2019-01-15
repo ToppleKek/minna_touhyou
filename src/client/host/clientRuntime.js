@@ -120,7 +120,7 @@ function handleRevote(players) {
 }
 
 function showResults(packet) {
-    document.getElementById('connect-text').innerHTML = 'Congratulations Winners';
+    document.getElementById('connect-text').innerHTML = `Congratulations Winners, ${packet[0].nickname}'s answer was voted the best.`;
 
     const submittedAnswers = document.getElementById('submitted-answers');
     const humanLB = [];

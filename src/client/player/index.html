@@ -6,10 +6,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="style.css">
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     </head>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="joinHandler.js"></script>
     <script src="clientRuntime.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/core.js"></script>
     <script type="text/javascript">
         let userListShown = true;
 
@@ -27,6 +31,10 @@
             window.setTimeout(() => {
                 document.getElementById('debugger').innerHTML = '';
             }, 15000);
+        }
+
+        function debugToastr(msg, timeout) {
+            toastr.info('Debug');
         }
 
         function handleCountdown() {
@@ -94,6 +102,8 @@
             socket.on('round-start', handleRound);
             socket.on('answer-confirm', removeUIElements);
             socket.on('vote-start', answers => handleVotingStage(answers, socket));
+            socket.on('vote-failed', handleVoteFailure);
+            socket.on('vote-success', handleVoteSuccess);
             socket.on('revote', handleRevote);
             socket.on('vote-end', showResults);
             socket.on('round-end', endRound);
@@ -115,7 +125,7 @@
             </div>
         </nav>
         <div id="user-controls" class="user-controls">
-            <h1 id="connect-text">Connecting...</h1>
+            <h1 id="connect-text">Connecting... (If there is a game running, you have been disconnected)</h1>
             <h1 id="countdown-text" style="display: none;">Game starting.</h1>
             <p id="name-text">Enter your nickname:</p><br>
             <form>

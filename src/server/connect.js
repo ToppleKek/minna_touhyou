@@ -5,6 +5,7 @@ const uuidGen = require('uuid/v4');
 
 module.exports = {
     connect(socket) {
+        if (mainModule.gameRunning) return socket.disconnect();
         const isHostSocket = socket.handshake.headers.referer.endsWith('/host/');
         utils.logInfo(`${isHostSocket ? 'Host' : 'Client'} connected - user-agent: ${socket.handshake.headers['user-agent']} - Awaiting host/play and ID...`);
         socket.on('disconnect', () => {
@@ -72,7 +73,7 @@ module.exports = {
         });
 
         socket.on('answer-submit', answer => runtime.manageAnswerSubmit(socket, answer));
-        socket.on('vote-submit', vote => runtime.manageVoteSubmit(socket, vote));
+        socket.on('vote-submit-ask', vote => runtime.manageVoteSubmit(socket, vote));
 
         socket.on('vote-start-ask', () => runtime.voteStartAsk(socket));
         socket.on('vote-end-ask', () => runtime.handleVoteEndAsk(socket));

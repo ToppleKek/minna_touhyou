@@ -10,6 +10,7 @@ module.exports.hostIO = io.of('/host');
 module.exports.playerIO = io.of('');
 module.exports.players = [];
 module.exports.currentGame = {};
+module.exports.gameRunning = false;
 
 app.use(express.static(`${__dirname}/src/client/player`));
 app.get('/', (request, result) => {

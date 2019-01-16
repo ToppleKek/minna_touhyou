@@ -119,10 +119,7 @@ function handleVotingStage(answers) {
 }
 
 function submitVote(e, socket) {
-    const submit = document.getElementById('submitted-answers');
-    if (submit) submit.innerHTML = '';
-    document.getElementById('connect-text').innerHTML = 'Waiting for everyone to vote...';
-    socket.emit('vote-submit', e.id.substring(9));
+    socket.emit('vote-submit-ask', e.id.substring(9));
 }
 
 function removeUIElements() {
@@ -132,6 +129,16 @@ function removeUIElements() {
 
     if (textBox) textBox.parentNode.removeChild(textBox);
     if (submit) submit.parentNode.removeChild(submit);
+}
+
+function handleVoteFailure(packet) {
+
+}
+
+function handleVoteSuccess(vote) {
+    const submit = document.getElementById('submitted-answers');
+    if (submit) submit.innerHTML = '';
+    document.getElementById('connect-text').innerHTML = 'Waiting for everyone to vote...';
 }
 
 function handleRevote(answers) {

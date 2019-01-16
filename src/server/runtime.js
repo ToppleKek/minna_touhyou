@@ -6,6 +6,7 @@ module.exports = {
 
     gameStart(socket) {
         utils.logInfo('The game should start now');
+        mainModule.gameRunning = true;
         // This should setup the server to start sending questions to the host.
         socket.on('round-start-ask', () => module.exports.mainGame(socket));
     },
@@ -123,8 +124,13 @@ module.exports = {
                 return e.id === vote;
             });
 
+            if (!mainModule.players[i]) {
+                mainModule.players[n].voted = false;
+                return socket.emit('vote-failed', {vote,msg:'The user that submitted this answer no longer exists'});
+            }
             mainModule.players[i].votes++;
             mainModule.hostIO.emit('vote-submit', {vote,players:mainModule.players});
+            socket.emit('vote-success', vote);
         }
 
         let endVote = true;

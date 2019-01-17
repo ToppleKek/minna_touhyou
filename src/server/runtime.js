@@ -199,7 +199,7 @@ module.exports = {
             let points = 1000;
 
             for (let i = 0; i < lonelyGame; i++) {
-                if (sortedPlayers[i].id === 'host' || !sortedPlayers[i].currentRoundAnswer) continue;
+                if (!sortedPlayers[i] || sortedPlayers[i].id === 'host' || !sortedPlayers[i].currentRoundAnswer) continue;
                 sortedPlayers[i].points += points;
                 utils.logInfo(`Awarded ${sortedPlayers[i].nickname} - ${points} points`);
                 points -= 150;

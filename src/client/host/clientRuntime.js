@@ -102,7 +102,7 @@ function handleAnswer(packet) {
     answerList.appendChild(p);
 
     for (let i = 0; i < packet.players.length; i++) {
-        if (packet.players[i].id === 'host' || !packet.players[i].currentRoundAnswer) continue;
+        if (packet.players[i].id === 'host' || !packet.players[i].currentRoundAnswer || packet.players[i].connectionType !== 'unconnected') continue;
         else n++;
     }
 

@@ -5,9 +5,24 @@ const uuidGen = require('uuid/v4');
 
 module.exports = {
     connect(socket) {
-        if (mainModule.gameRunning) return socket.disconnect();
+        //if (mainModule.gameRunning) return socket.disconnect();
         const isHostSocket = socket.handshake.headers.referer.endsWith('/host/');
-        utils.logInfo(`${isHostSocket ? 'Host' : 'Client'} connected - user-agent: ${socket.handshake.headers['user-agent']} - Awaiting host/play and ID...`);
+        utils.logInfo(`${isHostSocket ? 'Host' : 'Client'} connected - user-agent: ${socket.handshake.headers['user-agent']} - socketID: ${socket.id} - Awaiting host/play and ID...`);
+        
+        // We now push a player object on right away!
+        const packet = {
+            nickname: 'unconnected',
+            connectionType: 'unconnected',
+            id: uuidGen(),
+            socketID: socket.id,
+            points: 0
+        }; 
+
+        socket.gameUUID = packet.id;
+        mainModule.players.push(packet);
+
+        socket.emit('connect-confirm', packet);
+
         socket.on('disconnect', () => {
             for (let i = 0; i < mainModule.players.length; i++) {
                 if (mainModule.players[i].id === socket.gameUUID) {
@@ -33,22 +48,37 @@ module.exports = {
         });
 
         socket.on('join-ask', requestedPlayerObj => {
+            console.dir(requestedPlayerObj);
+            const i = mainModule.players.findIndex(e => {
+                return e.id === requestedPlayerObj.id;
+            });
+
+            if (!mainModule.players[i]) return utils.logError(`A client tried to send a join request with an invalid UUID. UUID: ${requestedPlayerObj.id}`);
+
             let packet = {};
-            packet.nickname = requestedPlayerObj.nickname.length < 0 || requestedPlayerObj.nickname.length > 20 ? 'invalid-nickname' : requestedPlayerObj.nickname;
+            mainModule.players[i].nickname = requestedPlayerObj.nickname.length < 0 || requestedPlayerObj.nickname.length > 20 ? 'invalid-nickname' : requestedPlayerObj.nickname;
             if (requestedPlayerObj.connectionType === 'host') {
-                packet.connectionType = 'host';
-                packet.id = 'host';
+                mainModule.players[i].connectionType = 'host';
+                mainModule.players[i].id = 'host';
+                socket.gameUUID = 'host';
             } else {
-                packet.connectionType = 'player';
-                packet.id = uuidGen();
-            }         
-            socket.gameUUID = packet.id;
-            packet.socketID = socket.id;
-            packet.points = 0;
-            mainModule.players.push(packet);
-            utils.logInfo(`${packet.id === 'host' ? 'Host' : 'Player'} registered game UUID: ${packet.id} socketID: ${packet.socketID} with connectionType: ${packet.connectionType}\n\nPlayers now:\n`);
+                mainModule.players[i].connectionType = 'player';
+            }
+            utils.logInfo(`${mainModule.players[i].id === 'host' ? 'Host' : 'Player'} registered game UUID: ${mainModule.players[i].id} socketID: ${mainModule.players[i].socketID} with connectionType: ${mainModule.players[i].connectionType}\n\nPlayers now:\n`);
             console.dir(mainModule.players);
-            socket.emit('join-confirm', packet);
+
+            socket.emit('join-confirm', mainModule.players[i]);
+            if (mainModule.players[i].id === 'host') {
+                const n = mainModule.players.findIndex(e => {
+                    return e.socketID === mainModule.players[i].socketID.substring(6);
+                });
+
+                if (n > -1) {
+                    mainModule.players.splice(n, 1);
+                    utils.logDebug(`PATCH: deleted duplicate zombie host at index ${n}`);
+                }
+            }
+            // I forgot I did this lmao
             mainModule.playerIO.emit('players-update', mainModule.players);
             mainModule.hostIO.emit('players-update', mainModule.players);
         });

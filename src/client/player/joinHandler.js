@@ -1,6 +1,6 @@
 function sendPacketPlayer(socket, player) {
     let nickname = document.getElementById('nickname').value;
-    if (nickname.length < 1 || nickname.length > 20) return document.getElementById('name-text').innerHTML = 'Your nickname must be between 1 and 20 characters long';
+    if (nickname.length < 1 || nickname.length > 20) return toastr.error('Your nickname must be between 1 and 20 characters long.', 'Join Handler');
     const e = document.getElementById('hostButton');
     const eb = document.getElementById('playerButton');
     if (e) e.parentNode.removeChild(e);
@@ -14,8 +14,8 @@ function sendPacketPlayer(socket, player) {
 
         e.parentNode.removeChild(e);
         eb.parentNode.removeChild(eb);
-        player.id = packet.id;
-        player.points = packet.points;
+
+        player = packet;
 
         document.getElementById('connect-text').innerHTML = `Connected as a player. Your name is: ${player.nickname}`;
         document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: waiting for players`;

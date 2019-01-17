@@ -59,7 +59,10 @@
         const socket = io('/host');
         let player = {id: 'not-connected'};
         socket.on('connect', () => {
-            socket.emit('auto-assign');
+            socket.on('connect-confirm', packet => {
+                player = packet;
+                socket.emit('auto-assign');
+            });
             socket.on('auto-assign-complete', isPlayer => {
                 if (isPlayer) {
                     const e = document.getElementById('hostButton');

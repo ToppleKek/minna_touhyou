@@ -137,7 +137,7 @@ module.exports = {
 
         for (let i = 0; i < mainModule.players.length; i++) {
             utils.logInfo(`Voted? ${mainModule.players[i].nickname}: ${mainModule.players[i].voted}`);
-            if (!mainModule.players[i].voted && mainModule.players[i].id !== 'host') {
+            if (!mainModule.players[i].voted && mainModule.players[i].id !== 'host' && mainModule.players[i].connectionType !== 'unconnected') {
                 endVote = false;
                 break;
             }

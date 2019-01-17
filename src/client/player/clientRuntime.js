@@ -12,6 +12,7 @@ function timeoutAsync(callback, time) {
 
 
 async function handleRound(roundInfo) {
+    if (player.connectionType === 'unconnected') return toastr.warning('A round is starting but you are unconnected! Please enter a nickname.', 'Round Handler');
     document.getElementById('countdown-text').style = '';
     document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: running - Points: ${player.points}`;
     for (let i = roundInfo.firstRound ? 7 : 5; i >= 0; i--) {
@@ -66,20 +67,7 @@ function submitAnswer() {
     const ans = document.getElementById('answer-input');
 
     if (ans.value.length < 1 || ans.value.length > 500) {
-        const exist = document.getElementById('warn-text');
-        if (exist) return;
-        const p = document.createElement('p');
-        p.setAttribute('id', 'warn-text');
-        p.innerHTML = 'Your answer must be between 1 and 500 characters!';
-
-        const e = document.getElementById('countdown-text');
-        const parent = e.parentNode;
-
-        parent.insertBefore(p, e.nextSibling);
-
-        window.setTimeout(() => {
-            p.parentNode.removeChild(p);
-        }, 5000);
+        toastr.error('Your answer must be between 1 and 500 characters long.', 'Submit Answer Handler');
     } else {
         document.getElementById('connect-text').innerHTML = 'Good answer! Waiting for other players to finish...';
         
@@ -88,6 +76,7 @@ function submitAnswer() {
 }
 
 function handleVotingStage(answers) {
+    if (player.connectionType === 'unconnected') return toastr.warning('A voting stage is starting but you are unconnected! Please enter a nickname.', 'Vote Handler');
     currentTimerCancel = true;
     console.log('vote start');
     console.dir(answers);
@@ -132,7 +121,7 @@ function removeUIElements() {
 }
 
 function handleVoteFailure(packet) {
-
+    toastr.warning(`The server rejected your vote with message: ${packet.msg}`, 'Vote Failed');
 }
 
 function handleVoteSuccess(vote) {
@@ -142,6 +131,7 @@ function handleVoteSuccess(vote) {
 }
 
 function handleRevote(answers) {
+    if (player.connectionType === 'unconnected') return toastr.warning('A revote starting but you are unconnected! Please enter a nickname.', 'Revote Handler');
     const submit = document.getElementById('submitted-answers');
     if (submit) submit.parentNode.removeChild(submit);
     document.getElementById('connect-text').innerHTML = 'Not enough info to determine the winners. We must have a revote.';
@@ -152,6 +142,8 @@ function handleRevote(answers) {
 }
 
 function showResults(packet) {
+    if (player.connectionType === 'unconnected') return toastr.warning('Results are being shown, but you are unconnected! Please enter a nickname.', 'Round End Handler');
+    
     console.log(player.id);
     console.dir(packet);
     const won = packet.winners.find(e => {
@@ -168,7 +160,7 @@ function showResults(packet) {
         humanLB.push(`${packet.leaderboard[i].name} -- ${packet.leaderboard[i].points}`);
     }
 
-    submittedAnswers.innerHTML = humanLB.join('<br>');
+    if (submittedAnswers) submittedAnswers.innerHTML = humanLB.join('<br>');
 
     const i = packet.leaderboard.findIndex(e => {
         return e.id === player.id;
@@ -184,6 +176,7 @@ function showResults(packet) {
 }
 
 function endRound() {
+    if (player.connectionType === 'unconnected') return toastr.warning('Round is ending, but you are unconnected! Please enter a nickname.', 'Round End Handler');
     // Reset all UI elements for the next round
     currentTimerCancel = false;
     document.getElementById('connect-text').innerHTML = 'Waiting for a response from the server...';

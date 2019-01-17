@@ -9,19 +9,24 @@
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     </head>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="joinHandler.js"></script>
     <script src="clientRuntime.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/core.js"></script>
     <script type="text/javascript">
         let userListShown = true;
+        toastr.options.closeButton = true;
+        toastr.options.escapeHtml = true;
+        toastr.options.timeOut = 10000;
+        toastr.options.extendedTimeOut = 15000;
+        toastr.options.progressBar = true;
 
         window.onbeforeunload = () => {
             return true;
         };
 
         function showDebug() {
+            toastr.info('Debug information shown. It will be hidden in 15 seconds.', 'Debugger');
             document.getElementById('debugger').innerHTML = `---みんな投票 (Minna Tōhyō) DEBUGGER---<br><br>---COMMON DEBUG VARIABLES---<br>player: ${player}<br>currentTimerCancel: ${currentTimerCancel}<br>\
                 socket: ${socket}<br><br> If you would like more information, you may access many variables in the console.<br>\
                 The main socket.io WebSocket may be accessed by the socket variable.<br>WARNING:<br>\
@@ -60,7 +65,12 @@
         let player = {id: 'not-connected'};
 
         socket.on('connect', () => {
-            socket.emit('auto-assign');
+            toastr.success('Welcome, you are now connected');
+            socket.on('connect-confirm', packet => {
+                player = packet;
+                socket.emit('auto-assign');
+            });
+
             socket.on('auto-assign-complete', isPlayer => {
                 if (isPlayer) {
                     const e = document.getElementById('hostButton');
@@ -76,9 +86,11 @@
             });
 
             socket.on('game-start-countdown', time => {
+                if (player.connectionType === 'unconnected') return toastr.warning('game-start-countdown signal received, but you are unconnected! Please enter a nickname.', 'Embedded Game Manager');
                 document.getElementById('countdown-text').style = '';
                 document.getElementById('button-br').style = 'display: none;';
                 document.getElementById('connect-text').innerHTML = `Connected as a player. Your name is: ${player.nickname}`;
+                toastr.info('If the game has already started and you have connected, don\'t worry! You will be included on the next signal from the server.');
                 //count = time / 1000;
                 countdown = window.setInterval(() => {
                     console.log(count);
@@ -87,6 +99,7 @@
             });
 
             socket.on('game-start', gameData => {
+                if (player.connectionType === 'unconnected') return toastr.warning('game-start signal received, but you are unconnected! Please enter a nickname.', 'Embedded Game Manager');
                 document.getElementById('countdown-text').innerHTML = 'Look at the host screen!';
 
                 const elem = document.createElement('p');

@@ -12,6 +12,16 @@
     }
 }
 
+@keyframes pulse {
+    0% {
+        background-color: #1d2124;
+    }
+    
+    100% {
+        background-color: #050607;
+    }
+}
+
 body {
     background-color: #1d2124;
     color: #ffffff;
@@ -47,6 +57,10 @@ footer {
     padding: 5px;
     background-color: #343A40;
     color: #ffffff;
+}
+
+.bg-pulse {
+    animation: pulse 4s infinite alternate;
 }
 
 .rules-text {

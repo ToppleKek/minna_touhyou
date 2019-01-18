@@ -65,10 +65,25 @@
         let player = {id: 'not-connected'};
 
         socket.on('connect', () => {
-            toastr.success('Welcome, you are now connected');
+            toastr.success('Welcome, you are now connected', 'Socket.IO WebSocket');
+
+            // If the player loses connection to the server, once they reconnect refresh the page without asking
+            if (!document.getElementById('playerButton') || !document.getElementById('nickname')) {
+                window.onbeforeunload = null;
+                window.location.reload(true); 
+            }
+
             socket.on('connect-confirm', packet => {
                 player = packet;
                 socket.emit('auto-assign');
+            });
+
+            socket.on('disconnect', reason => {
+                if (reason === 'io server disconnect') {
+                    toastr.error(`The server has disconnected you. If you wish to reconnect, you must refresh the page. (Server initiated disconnection; reason: ${reason})`, 'Socket.IO WebSocket');
+                } else {
+                   toastr.error(`Lost connection to the server. Trying to reconnect right away! Reason: ${reason}`, 'Socket.IO WebSocket');
+                }
             });
 
             socket.on('auto-assign-complete', isPlayer => {

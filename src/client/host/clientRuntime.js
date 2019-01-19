@@ -18,13 +18,20 @@ async function handleRound(roundInfo) {
 
     countdownText.style = '';
 
+    document.body.style.animation = roundInfo.firstRound ? 'lightToDark 8s' : 'lightToDark 6s';
     for (let i = roundInfo.firstRound ? 7 : 5; i >= 0; i--) {
         await timeoutAsync(() => {
             document.getElementById('countdown-text').innerHTML = `Question ${roundInfo.roundNumber} of ${roundInfo.gameLen}. Ready? ${i}`;
         }, 1000);
     }
 
-
+    document.body.style.animation = 'darkToLight 5s';
+    if (roundInfo.bgUseImg) {
+        const bgImg = document.getElementById('bg-image');
+        bgImg.style.animation = '';
+        bgImg.style.backgroundImage = `url('${roundInfo.bgURL}')`;
+        bgImg.style.animation = 'fadeIn 5s';
+    }
     connectText.innerHTML = `${roundInfo.question}<br><small>Extra Info: ${roundInfo.extraInfo}</small>`;
     answerList.innerHTML = 'No answers yet.';
     answerList.style = '';
@@ -102,7 +109,7 @@ function handleAnswer(packet) {
     answerList.appendChild(p);
 
     for (let i = 0; i < packet.players.length; i++) {
-        if (packet.players[i].id === 'host' || !packet.players[i].currentRoundAnswer || packet.players[i].connectionType !== 'unconnected') continue;
+        if (packet.players[i].id === 'host' || !packet.players[i].currentRoundAnswer || packet.players[i].connectionType === 'unconnected') continue;
         else n++;
     }
 
@@ -120,6 +127,17 @@ function handleRevote(players) {
 }
 
 function showResults(packet) {
+    document.body.style.animation = 'lightToDark 5s';
+    document.getElementById('bg-image').style.animation = 'fadeOut 4s';
+
+    setTimeout(() => {
+        const bgImg = document.getElementById('bg-image');
+        document.body.style.animation = '';
+        bgImg.style.animation = '';
+        bgImg.style.backgroundImage = '';
+        document.body.style.animation = 'darkToLight 3s';
+    }, 4000);
+
     document.getElementById('connect-text').innerHTML = `Congratulations Winners, ${packet[0].nickname}'s answer was voted the best.`;
 
     const submittedAnswers = document.getElementById('submitted-answers');
@@ -163,6 +181,7 @@ function endRound() {
 }
 
 function endGame(players) {
+    document.body.style.animation = 'lightToDark 4s alternate infinite';
     const submittedAnswers = document.getElementById('submitted-answers');
     const humanLB = [];
 

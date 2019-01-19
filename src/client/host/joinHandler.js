@@ -1,6 +1,6 @@
 function sendPacketHost(socket) {
     let nickname = document.getElementById('nickname').value;
-    if (nickname.length < 1 || nickname.length > 20) return document.getElementById('name-text').innerHTML = 'Your nickname must be between 1 and 20 characters long';
+    if (nickname.length < 1 || nickname.length > 20 || nickname === 'unconnected') return document.getElementById('name-text').innerHTML = 'Your nickname must be between 1 and 20 characters long (It may also be invalid).';
     const e = document.getElementById('hostButton');
 
     e.parentNode.removeChild(e);

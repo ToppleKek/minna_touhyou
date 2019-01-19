@@ -56,7 +56,7 @@ module.exports = {
             if (!mainModule.players[i]) return utils.logError(`A client tried to send a join request with an invalid UUID. UUID: ${requestedPlayerObj.id}`);
 
             let packet = {};
-            mainModule.players[i].nickname = requestedPlayerObj.nickname.length < 0 || requestedPlayerObj.nickname.length > 20 ? 'invalid-nickname' : requestedPlayerObj.nickname;
+            mainModule.players[i].nickname = requestedPlayerObj.nickname.length < 0 || requestedPlayerObj.nickname.length > 20 || requestedPlayerObj.nickname === 'unconnected' ? 'invalid-nickname' : requestedPlayerObj.nickname;
             if (requestedPlayerObj.connectionType === 'host') {
                 mainModule.players[i].connectionType = 'host';
                 mainModule.players[i].id = 'host';
@@ -68,15 +68,20 @@ module.exports = {
             console.dir(mainModule.players);
 
             socket.emit('join-confirm', mainModule.players[i]);
+            let n;
             if (mainModule.players[i].id === 'host') {
-                const n = mainModule.players.findIndex(e => {
-                    return e.socketID === mainModule.players[i].socketID.substring(6);
+                n = mainModule.players.findIndex(e => {
+                    return e.socketID === mainModule.players[i].socketID.substring(6) && e.nickname === 'unconnected';
                 });
+            } else {
+                n = mainModule.players.findIndex(e => {
+                    return e.socketID === mainModule.players[i].socketID && e.nickname === 'unconnected';
+                });
+            }
 
-                if (n > -1) {
-                    mainModule.players.splice(n, 1);
-                    utils.logDebug(`PATCH: deleted duplicate zombie host at index ${n}`);
-                }
+            if (n > -1) {
+                mainModule.players.splice(n, 1);
+                utils.logDebug(`PATCH: deleted duplicate zombie client at index ${n}`);
             }
             // I forgot I did this lmao
             mainModule.playerIO.emit('players-update', mainModule.players);

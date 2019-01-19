@@ -12,7 +12,7 @@
     }
 }
 
-@keyframes pulse {
+@keyframes lightToDark {
     0% {
         background-color: #1d2124;
     }
@@ -22,7 +22,39 @@
     }
 }
 
-body {
+@keyframes darkToLight {
+    0% {
+        background-color: #050607;
+    }
+    
+    100% {
+        background-color: #1d2124;
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 0.2;
+    }
+    
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    
+    100% {
+        opacity: 0.2;
+    }
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
     background-color: #1d2124;
     color: #ffffff;
 }
@@ -59,10 +91,6 @@ footer {
     color: #ffffff;
 }
 
-.bg-pulse {
-    animation: pulse 4s infinite alternate;
-}
-
 .rules-text {
     position: absolute;
     opacity: 0;
@@ -71,14 +99,45 @@ footer {
     animation-duration: 7s;
 }
 
+.bg-image {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    opacity: 0.2;
+    background-size: cover;
+    
+    -webkit-filter: blur(5px);
+    -moz-filter: blur(5px);
+    -o-filter: blur(5px);
+    -ms-filter: blur(5px);
+    filter: blur(5px);
+}
 .user-controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    margin-left: 20px;
+    margin-right: 20px;
     text-align: center;
+}
+
+.connect-div {
+    position: absolute;
 }
 
 .user-list {
     position: absolute;
+    left: 0;
     text-align: center;
-    bottom: 50px;
+    bottom: 0;
     font-size: 14px;
 }
 

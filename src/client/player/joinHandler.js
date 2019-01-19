@@ -1,6 +1,6 @@
 function sendPacketPlayer(socket, player) {
     let nickname = document.getElementById('nickname').value;
-    if (nickname.length < 1 || nickname.length > 20) return toastr.error('Your nickname must be between 1 and 20 characters long.', 'Join Handler');
+    if (nickname.length < 1 || nickname.length > 20 || nickname === 'unconnected') return toastr.error('Your nickname must be between 1 and 20 characters long. (It may also be invalid).', 'Join Handler');
     const e = document.getElementById('hostButton');
     const eb = document.getElementById('playerButton');
     if (e) e.parentNode.removeChild(e);

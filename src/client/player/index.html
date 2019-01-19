@@ -13,6 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="joinHandler.js"></script>
     <script src="clientRuntime.js"></script>
+    <script src="errorHandler.js"></script>
     <script type="text/javascript">
         let userListShown = true;
         toastr.options.closeButton = true;
@@ -27,11 +28,17 @@
 
         function showDebug() {
             toastr.info('Debug information shown. It will be hidden in 15 seconds.', 'Debugger');
-            document.getElementById('debugger').innerHTML = `---みんな投票 (Minna Tōhyō) DEBUGGER---<br><br>---COMMON DEBUG VARIABLES---<br>player: ${player}<br>currentTimerCancel: ${currentTimerCancel}<br>\
-                socket: ${socket}<br><br> If you would like more information, you may access many variables in the console.<br>\
+            document.getElementById('debugger').innerHTML = `---みんな投票 - Everyone votes in this browser-based Q&A game---<br><br>---COMMON DEBUG VARIABLES---<br>player: ${player} (Check console/connect mobile debugger for more information)<br>currentTimerCancel: ${currentTimerCancel}<br>\
+                socket: ${socket} (Check console/connect mobile debugger for more information)<br><br> If you would like more information, you may access many variables in the console.<br>\
                 The main socket.io WebSocket may be accessed by the socket variable.<br>WARNING:<br>\
                 SENDING INVALID SIGNALS/SENDING SIGNALS WHEN NOT EXPECTED MAY PRODUCE UNEXPECTED RESULTS!<br>\
                 Keep note of what role you play! No one likes cheaters. You are a player. This will close in 15 seconds.`;
+
+            console.log('player:');
+            console.dir(player);
+
+            console.log('socket:');
+            console.dir(socket);
 
             window.setTimeout(() => {
                 document.getElementById('debugger').innerHTML = '';
@@ -127,6 +134,10 @@
                 document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: starting - Points: ${player.points}`;
             });
 
+            socket.on('error', handleGenericSocketError);
+            socket.on('connect_error', handleConnectionError);
+            socket.on('reconnect_attempt', handleReconnectAttempt);
+
             socket.on('round-start', handleRound);
             socket.on('answer-confirm', removeUIElements);
             socket.on('vote-start', answers => handleVotingStage(answers, socket));
@@ -153,7 +164,7 @@
             </div>
         </nav>
         <div id="user-controls" class="user-controls">
-            <h1 id="connect-text">Connecting... (If there is a game running, you have been disconnected)</h1>
+            <h1 id="connect-text">Connecting... <small>(If you cannot connect, make sure your browser has JavaScript enabled and it supports at least ECMAScript 2017. iOS 11+, Chrome 68+ should both work.)</small></h1>
             <h1 id="countdown-text" style="display: none;">Game starting.</h1>
             <p id="name-text">Enter your nickname:</p><br>
             <form>

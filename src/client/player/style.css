@@ -53,3 +53,7 @@ footer {
 .info-text {
   padding-bottom: 20px;
 }
+
+body #toast-container > div {
+    opacity: 0.9;
+}

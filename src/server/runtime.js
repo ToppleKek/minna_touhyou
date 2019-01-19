@@ -34,6 +34,8 @@ module.exports = {
                         question:questionObj.question,
                         timeLimit:questionObj.timeLimit,
                         firstRound: questionObj.firstRound,
+                        bgUseImg:questionObj.bgUseImg,
+                        bgURL:questionObj.bgURL
                     });
                 }, 7000); // We should probably wait when its the first round because of the rules
                           // The rules take a little while to fade out, so we wait before starting the game
@@ -44,7 +46,9 @@ module.exports = {
                 mainModule.playerIO.emit('round-start', {
                     question:questionObj.question,
                     timeLimit:questionObj.timeLimit,
-                    firstRound
+                    firstRound,
+                    bgUseImg:questionObj.bgUseImg,
+                    bgURL:questionObj.bgURL
                 });
             }
             

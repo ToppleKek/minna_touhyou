@@ -14,11 +14,21 @@ function timeoutAsync(callback, time) {
 async function handleRound(roundInfo) {
     if (player.connectionType === 'unconnected') return toastr.warning('A round is starting but you are unconnected! Please enter a nickname.', 'Round Handler');
     document.getElementById('countdown-text').style = '';
-    document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: running - Points: ${player.points}`;
+    document.getElementById('footer-div').innerHTML = `${player.nickname} - Now playing: ${currentGameInfo.name} by: ${currentGameInfo.author} - Game status: running - Points: ${player.points}`;
+    document.body.style.animation = roundInfo.firstRound ? 'lightToDark 8s' : 'lightToDark 6s';
+
     for (let i = roundInfo.firstRound ? 7 : 5; i >= 0; i--) {
         await timeoutAsync(() => {
             document.getElementById('countdown-text').innerHTML = `Ready? ${i}`;
         }, 1000);
+    }
+
+    document.body.style.animation = 'darkToLight 5s';
+    if (roundInfo.bgUseImg) {
+        const bgImg = document.getElementById('bg-image');
+        bgImg.style.animation = '';
+        bgImg.style.backgroundImage = `url('${roundInfo.bgURL}')`;
+        bgImg.style.animation = 'fadeIn 5s';
     }
 
     // Setup inputs for round
@@ -71,7 +81,7 @@ function submitAnswer() {
     } else {
         document.getElementById('connect-text').innerHTML = 'Good answer! Waiting for other players to finish...';
         
-        socket.emit('answer-submit', {player,text:ans.value});
+        socket.emit('answer-submit', {player,text:escapeHtml(ans.value)});
     }
 }
 
@@ -144,6 +154,17 @@ function handleRevote(answers) {
 function showResults(packet) {
     if (player.connectionType === 'unconnected') return toastr.warning('Results are being shown, but you are unconnected! Please enter a nickname.', 'Round End Handler');
     
+    document.body.style.animation = 'lightToDark 5s';
+    document.getElementById('bg-image').style.animation = 'fadeOut 4s';
+
+    window.setTimeout(() => {
+        const bgImg = document.getElementById('bg-image');
+        document.body.style.animation = '';
+        bgImg.style.animation = '';
+        bgImg.style.backgroundImage = '';
+        document.body.style.animation = 'darkToLight 3s';
+    }, 4000);
+
     console.log(player.id);
     console.dir(packet);
     const won = packet.winners.find(e => {
@@ -172,7 +193,7 @@ function showResults(packet) {
 
     player.points = packet.leaderboard[i].points;
     console.log(packet.leaderboard[i].points);
-    document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: running - Points: ${player.points}`;
+    document.getElementById('footer-div').innerHTML = `${player.nickname} - Now playing: ${currentGameInfo.name} by: ${currentGameInfo.author} - Game status: running - Points: ${player.points}`;
 }
 
 function endRound() {
@@ -188,6 +209,7 @@ function endRound() {
 }
 
 function endGame(players) {
+    document.body.style.animation = 'lightToDark 4s alternate infinite';
     const submittedAnswers = document.createElement('p');
     const userList = document.getElementById('user-list');
     const humanLB = [];

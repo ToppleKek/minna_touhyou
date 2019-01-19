@@ -16,6 +16,7 @@
     <script src="errorHandler.js"></script>
     <script type="text/javascript">
         let userListShown = true;
+        let currentGameInfo = {};
         toastr.options.closeButton = true;
         toastr.options.escapeHtml = true;
         toastr.options.timeOut = 10000;
@@ -25,6 +26,13 @@
         window.onbeforeunload = () => {
             return true;
         };
+
+        function escapeHtml(str) {
+            // http://shebang.brandonmintern.com/foolproof-html-escaping-in-javascript/
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
 
         function showDebug() {
             toastr.info('Debug information shown. It will be hidden in 15 seconds.', 'Debugger');
@@ -74,6 +82,8 @@
         socket.on('connect', () => {
             toastr.success('Welcome, you are now connected', 'Socket.IO WebSocket');
 
+            document.body.style.animation = 'lightToDark 4s infinite alternate';
+
             // If the player loses connection to the server, once they reconnect refresh the page without asking
             if (!document.getElementById('playerButton') || !document.getElementById('nickname')) {
                 window.onbeforeunload = null;
@@ -121,17 +131,12 @@
             });
 
             socket.on('game-start', gameData => {
+                document.body.style.animation = '';
                 if (player.connectionType === 'unconnected') return toastr.warning('game-start signal received, but you are unconnected! Please enter a nickname.', 'Embedded Game Manager');
                 document.getElementById('countdown-text').innerHTML = 'Look at the host screen!';
 
-                const elem = document.createElement('p');
-                elem.setAttribute('id', 'info-text');
-                elem.setAttribute('class', 'info-text');
-                elem.innerHTML = `Now playing: ${gameData.name} by: ${gameData.author}`;
-
-                document.body.appendChild(elem);
-
-                document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: starting - Points: ${player.points}`;
+                currentGameInfo = gameData;
+                document.getElementById('footer-div').innerHTML = `${player.nickname} - Now playing: ${currentGameInfo.name} by: ${currentGameInfo.author} - Game status: starting - Points: ${player.points}`;
             });
 
             socket.on('error', handleGenericSocketError);
@@ -163,6 +168,7 @@
                 </div>
             </div>
         </nav>
+        <div class="bg-image" id="bg-image"></div>
         <div id="user-controls" class="user-controls">
             <h1 id="connect-text">Connecting... <small>(If you cannot connect, make sure your browser has JavaScript enabled and it supports at least ECMAScript 2017. iOS 11+, Chrome 68+ should both work.)</small></h1>
             <h1 id="countdown-text" style="display: none;">Game starting.</h1>
@@ -174,7 +180,7 @@
             <button id="hostButton" onclick="window.location.href = `${window.location.href}host/`;">Host</button>
             <button id="playerButton" onclick="sendPacketPlayer(socket, player)">Play</button>
             <br id="button-br">
-            <p id="user-list">No connected players</p>  
+            <p id="user-list" class="user-list">No connected players</p>
         </div>
         <p id="debugger" style="font-size: 16px"></p>
         <footer class="page-footer font-small blue fixed-bottom">

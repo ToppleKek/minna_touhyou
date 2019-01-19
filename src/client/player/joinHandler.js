@@ -6,7 +6,7 @@ function sendPacketPlayer(socket, player) {
     if (e) e.parentNode.removeChild(e);
     eb.parentNode.removeChild(eb);
     player.connectionType = 'player';
-    player.nickname = nickname;
+    player.nickname = escapeHtml(nickname);
     socket.emit('join-ask', player);
     socket.on('join-confirm', packet => {
         const e = document.getElementById('nickname');

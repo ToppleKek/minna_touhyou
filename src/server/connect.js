@@ -23,7 +23,7 @@ module.exports = {
 
         socket.emit('connect-confirm', packet);
 
-        socket.on('disconnect', () => {
+        socket.on('disconnect', reason => {
             for (let i = 0; i < mainModule.players.length; i++) {
                 if (mainModule.players[i].id === socket.gameUUID) {
                     mainModule.players.splice(i, 1);
@@ -32,7 +32,7 @@ module.exports = {
                     mainModule.hostIO.emit('players-update', mainModule.players);
                 }
             }
-            utils.logInfo('Client disconnect');
+            utils.logInfo(`Client disconnect: reason: ${reason}`);
         });
 
         socket.on('auto-assign', () => {

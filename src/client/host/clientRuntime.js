@@ -130,7 +130,7 @@ function showResults(packet) {
     document.body.style.animation = 'lightToDark 5s';
     document.getElementById('bg-image').style.animation = 'fadeOut 4s';
 
-    setTimeout(() => {
+    window.setTimeout(() => {
         const bgImg = document.getElementById('bg-image');
         document.body.style.animation = '';
         bgImg.style.animation = '';

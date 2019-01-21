@@ -122,7 +122,7 @@
                 document.getElementById('countdown-text').style = '';
                 document.getElementById('button-br').style = 'display: none;';
                 document.getElementById('connect-text').innerHTML = `Connected as a player. Your name is: ${player.nickname}`;
-                toastr.info('If the game has already started and you have connected, don\'t worry! You will be included on the next signal from the server.');
+                toastr.info('If the game has already started and you have just connected, don\'t worry! You will be included on the next signal from the server.');
                 //count = time / 1000;
                 countdown = window.setInterval(() => {
                     console.log(count);

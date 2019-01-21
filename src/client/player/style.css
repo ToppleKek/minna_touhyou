@@ -74,6 +74,11 @@ table {
     font-size: 24px;
 }
 
+th, td {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
 footer {
     display: flex;
     justify-content: left;

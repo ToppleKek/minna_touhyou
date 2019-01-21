@@ -61,6 +61,8 @@ function handleVotingStage(players) {
     const answerList = document.getElementById('submitted-answers');
     answerList.innerHTML = '';
 
+    document.getElementById('connect-text').innerHTML = 'Tap the best answer on your device.';
+
     for (let i = 0; i < players.length; i++) {
         if (players[i].id === 'host' || !players[i].currentRoundAnswer) continue;
 

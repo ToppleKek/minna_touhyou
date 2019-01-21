@@ -5,7 +5,6 @@ const uuidGen = require('uuid/v4');
 
 module.exports = {
     connect(socket) {
-        //if (mainModule.gameRunning) return socket.disconnect();
         const isHostSocket = socket.handshake.headers.referer.endsWith('/host/');
         utils.logInfo(`${isHostSocket ? 'Host' : 'Client'} connected - user-agent: ${socket.handshake.headers['user-agent']} - socketID: ${socket.id} - Awaiting host/play and ID...`);
         
@@ -16,8 +15,9 @@ module.exports = {
             id: uuidGen(),
             socketID: socket.id,
             points: 0
-        }; 
+        };
 
+        if (mainModule.gameRunning) packet.gameInfo = {name:mainModule.currentGame.gameSetName,author:mainModule.author};
         socket.gameUUID = packet.id;
         mainModule.players.push(packet);
 
@@ -98,6 +98,7 @@ module.exports = {
                 mainModule.hostIO.emit('game-start-countdown', 3000);
                 mainModule.playerIO.emit('game-start-countdown', 3000);
                 setTimeout(() => {
+                    mainModule.gameRunning = true;
                     mainModule.hostIO.emit('game-start', gameInfo);
                     mainModule.playerIO.emit('game-start', {name:gameInfo.game.gameSetName,author:gameInfo.game.author});
                     runtime.gameStart(socket);

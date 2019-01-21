@@ -141,23 +141,38 @@ function showResults(packet) {
     document.getElementById('connect-text').innerHTML = `Congratulations Winners, ${packet[0].nickname}'s answer was voted the best.`;
 
     const submittedAnswers = document.getElementById('submitted-answers');
-    const humanLB = [];
+    const submittedTable = document.createElement('table');
+
+    const tbody = document.createElement('tbody');
 
     for (let i = 0; i < packet.length; i++) {
-        if (packet[i].id === 'host') continue;
-        humanLB.push(`${packet[i].nickname} -- ${packet[i].points}`);
+        const tr = document.createElement('tr');
+        const th1 = document.createElement('th');
+        const th2 = document.createElement('th');
+
+        th1.innerHTML = escapeHtml(packet[i].nickname);
+        th2.innerHTML = packet[i].points;
+
+        tr.appendChild(th1);
+        tr.appendChild(th2);
+
+        tbody.appendChild(tr);
     }
 
-    submittedAnswers.innerHTML = humanLB.join('<br>');
+    submittedTable.appendChild(tbody);
+
+    submittedTable.setAttribute('id', 'submitted-answers');
+
+    submittedAnswers.parentNode.replaceChild(submittedTable, submittedAnswers);
 
     const nextButton = document.createElement('button');
     nextButton.setAttribute('id', 'next-button');
     nextButton.innerHTML = 'Next Round';
     nextButton.addEventListener('click', sendEndRoundPacket);
 
-    const parent = submittedAnswers.parentNode;
+    const parent = submittedTable.parentNode;
 
-    parent.insertBefore(nextButton, submittedAnswers.nextSibling);
+    parent.insertBefore(nextButton, submittedTable.nextSibling);
 }
 
 function sendEndRoundPacket() {
@@ -183,13 +198,32 @@ function endRound() {
 function endGame(players) {
     document.body.style.animation = 'lightToDark 4s alternate infinite';
     const submittedAnswers = document.getElementById('submitted-answers');
-    const humanLB = [];
+    const submittedTable = document.createElement('table');
+    const tbody = document.createElement('tbody');
 
     for (let i = 0; i < players.length; i++) {
-        humanLB.push(`[${i + 1}] - ${players[i].nickname} - ${players[i].points}`);
+        const tr = document.createElement('tr');
+        const th1 = document.createElement('th');
+        const th2 = document.createElement('th');
+        const th3 = document.createElement('th');
+
+        th1.innerHTML = i + 1;
+        th2.innerHTML = escapeHtml(players[i].nickname);
+        th3.innerHTML = players[i].points;
+
+        tr.appendChild(th1);
+        tr.appendChild(th2);
+        tr.appendChild(th3);
+
+        tbody.appendChild(tr);
     }
+
+    submittedTable.appendChild(tbody);
+
+    submittedTable.setAttribute('id', 'submitted-answers');
+
+    submittedAnswers.parentNode.replaceChild(submittedTable, submittedAnswers);
 
     document.getElementById('connect-text').innerHTML = 'Game Over!';
     submittedAnswers.style = '';
-    submittedAnswers.innerHTML = humanLB.join('<br>');
 }

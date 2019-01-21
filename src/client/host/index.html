@@ -26,6 +26,13 @@
             return true;
         };
         
+        function escapeHtml(str) {
+            // http://shebang.brandonmintern.com/foolproof-html-escaping-in-javascript/
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
+
         function showDebug() {
             document.getElementById('debugger').innerHTML = `---みんな投票 - Everyone votes in this browser-based Q&A game---<br><br>---COMMON DEBUG VARIABLES---<br>player: ${player} (Check console/connect mobile debugger for more information)<br>currentTimerCancel: ${currentTimerCancel}<br>\
                 socket: ${socket} (Check console/connect mobile debugger for more information)<br><br> If you would like more information, you may access many variables in the console.<br>\
@@ -66,8 +73,10 @@
                 document.getElementById('connect-text').setAttribute('class', 'question-text');
             }, 7000);
         }
+
         const socket = io('/host');
         let player = {id: 'not-connected'};
+
         socket.on('connect', () => {
             toastr.success('Welcome, you are now connected', 'Socket.IO WebSocket');
 
@@ -102,7 +111,17 @@
                 for (let i = 0; i < players.length; i++) humanList.push(`${players[i].nickname} - ${players[i].id}`);
 
                 if (startingUserList && startingHead) {
-                    startingUserList.innerHTML = humanList.join('<br>');
+                    $('#user-list-waiting tr').not(function(){ return !!$(this).has('th').length; }).remove();
+                    for (let i = 0; i < players.length; i++) {
+                        const row = startingUserList.insertRow(-1);
+
+                        const nameCell = row.insertCell(0);
+                        const idCell = row.insertCell(1);
+
+                        nameCell.innerHTML = players[i].nickname;
+                        idCell.innerHTML = players[i].id;
+                    }
+                    // startingUserList.innerHTML = humanList.join('<br>');
                     startingHead.innerHTML = 'Connected Users';
                 }
 
@@ -179,7 +198,19 @@
             <br>
             <h2 id="user-list-waiting-head" class="user-list-waiting-head">No connected players</h2>
             <br>
-            <p id="user-list-waiting" class="user-list-waiting">Waiting for players...</p>
+<!--             <p id="user-list-waiting" class="user-list-waiting">Waiting for players...</p> -->
+            <table id="user-list-waiting" class="user-list-waiting">
+                <thread>
+                    <tr>
+                        <th>Name</th>
+                        <th>ID</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <p id="user-list" class="user-list" style="display: none;">No connected players</p>
         <!-- <div class="bg-image" id="bg-image"></div> -->

@@ -175,17 +175,36 @@ function showResults(packet) {
     document.getElementById('connect-text').innerHTML = won ? 'Nice job! Your answer was voted into the top 5.' : 'Nice try, but your answer was not a winner.';
 
     const submittedAnswers = document.getElementById('submitted-answers');
-    const humanLB = [];
+    const submittedTable = document.createElement('table');
+
+    const tbody = document.createElement('tbody');
 
     for (let i = 0; i < packet.leaderboard.length; i++) {
-        humanLB.push(`${packet.leaderboard[i].name} -- ${packet.leaderboard[i].points}`);
+        const tr = document.createElement('tr');
+        const th1 = document.createElement('th');
+        const th2 = document.createElement('th');
+
+        th1.innerHTML = escapeHtml(packet.leaderboard[i].name);
+        th2.innerHTML = packet.leaderboard[i].points;
+
+        tr.appendChild(th1);
+        tr.appendChild(th2);
+
+        tbody.appendChild(tr);
     }
 
-    if (submittedAnswers) submittedAnswers.innerHTML = humanLB.join('<br>');
+    submittedTable.appendChild(tbody);
+
+    submittedTable.setAttribute('id', 'submitted-answers');
+
+    console.log(submittedTable);
+
+    submittedAnswers.parentNode.replaceChild(submittedTable, submittedAnswers);
 
     const i = packet.leaderboard.findIndex(e => {
         return e.id === player.id;
     });
+
     console.log(i);
     console.dir(packet.leaderboard);
     console.log('packet:');
@@ -210,17 +229,34 @@ function endRound() {
 
 function endGame(players) {
     document.body.style.animation = 'lightToDark 4s alternate infinite';
-    const submittedAnswers = document.createElement('p');
-    const userList = document.getElementById('user-list');
-    const humanLB = [];
+    const submittedTable = document.createElement('table');
+    const tbody = document.createElement('tbody');
 
     for (let i = 0; i < players.length; i++) {
-        humanLB.push(`[${i + 1}] - ${players[i].nickname} - ${players[i].points}`);
+        const tr = document.createElement('tr');
+        const th1 = document.createElement('th');
+        const th2 = document.createElement('th');
+        const th3 = document.createElement('th');
+
+        th1.innerHTML = i + 1;
+        th2.innerHTML = escapeHtml(players[i].nickname);
+        th3.innerHTML = players[i].points;
+
+        tr.appendChild(th1);
+        tr.appendChild(th2);
+        tr.appendChild(th3);
+
+        tbody.appendChild(tr);
     }
 
+    submittedTable.appendChild(tbody);
+
+    submittedTable.setAttribute('id', 'submitted-answers');
+
+    const userList = document.getElementById('user-list');
+
     document.getElementById('connect-text').innerHTML = 'Game Over!';
-    submittedAnswers.innerHTML = humanLB.join('<br>');
 
     const parent = userList.parentNode;
-    parent.insertBefore(submittedAnswers, userList);
+    parent.insertBefore(submittedTable, userList);
 }

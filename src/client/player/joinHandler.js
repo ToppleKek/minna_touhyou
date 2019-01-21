@@ -17,6 +17,8 @@ function sendPacketPlayer(socket, player) {
 
         player = packet;
 
+        currentGameInfo = packet.gameInfo ? packet.gameInfo : null;
+
         document.getElementById('connect-text').innerHTML = `Connected as a player. Your name is: ${player.nickname}`;
         document.getElementById('footer-div').innerHTML = `${player.nickname} - ${player.id} - Game status: waiting for players`;
     });

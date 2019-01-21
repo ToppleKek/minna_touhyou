@@ -57,6 +57,9 @@ body, html {
     margin: 0;
     background-color: #1d2124;
     color: #ffffff;
+    min-height: 200px;
+    margin-bottom: 50px;
+    clear: both;
 }
 
 button {
@@ -89,6 +92,17 @@ footer {
     padding: 5px;
     background-color: #343A40;
     color: #ffffff;
+    z-index: 9999;
+}
+
+table {
+    margin: 1em auto;
+    font-size: 24px;
+}
+
+th, td {
+  padding-left: 25px;
+  padding-right: 25px;
 }
 
 .rules-text {
@@ -123,7 +137,7 @@ footer {
     position: absolute;
     left: 0;
     right: 0;
-    z-index: 9999;
+    z-index: 10;
     margin-left: 20px;
     margin-right: 20px;
     text-align: center;
@@ -140,12 +154,4 @@ footer {
     bottom: 0;
     font-size: 14px;
     
-}
-
-.user-list-waiting {
-    font-size: 20px;
-}
-
-.submitted-answers {
-    font-size: 20px;
 }
